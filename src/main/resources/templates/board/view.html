@@ -1,0 +1,134 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<head th:replace="fragments/common :: head('게시판')"></head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:replace="fragments/common :: menu('board')">
+</nav>
+<main>
+    <div class="container">
+        <h2>게시판</h2>
+        <!--    <form action="#" th:action="@{/noticeBoard/updateForm}" th:object="${boardDetail}" method="post">-->
+        <form id="form" name="form" class="center" method="post" enctype="multipart/form-data" th:object="${boardDetail}">
+            <input type="hidden" name="bbsId" th:value="BOARD">
+            <input type="hidden" th:field="*{bbsSeq}">
+            <input type="hidden" name="modifyYn" th:value="${modifyYn}">
+
+            <div class="form-group" style="margin-bottom: 20px; margin-top: 10px;">
+                <label for="title">요청 제목</label>
+                <input type="text" name="title" class="form-control" style="width:1000px;"
+                       th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"
+                       id="title" th:field="*{title}"
+                       th:readonly="${modifyYn == 'Y'}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                    제목 에러 메시지
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="contn">요청 내용</label>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('contn')}" th:errors="*{contn}">
+                    내용 에러 메시지
+                </div>
+
+                <!-- 내용 입력란 -->
+                <textarea id="contn" name="contn" class="form-control" th:classappend="${#fields.hasErrors('contn')} ? 'is-invalid'"
+                          th:field="*{contn}"
+                          th:readonly="${modifyYn == 'Y'}"
+                          style="width: 1000px; height: 300px;"></textarea>
+            </div>
+            <div id="filePreview" class="form-group" style="margin-bottom: 20px;">
+                <label style="display: inline-block;">첨부 파일 미리보기</label>
+                <img th:src="'/board/images/' + ${boardDetail.getFileUrl()}" alt="이미지" style="max-width: 100px; max-height: 100px; display: inline-block;">
+            </div>
+
+            <tr th:if="${boardDetail.uploadBoardFile != null && boardDetail.uploadBoardFile.size > 0}" th:each="detail : ${boardDetail.uploadBoardFile}">
+
+                <div class="form-control" style="width: 1000px;" id="fileContent" th:readonly="${modifyYn == 'Y'}">
+                    <a th:text="${detail.getAttachFileNm()}"></a>
+                </div>
+            </tr>
+            <div class="text-right" style="margin-top: 20px;">
+                <a class="btn btn-primary" th:href="@{/board/list}">취소</a>
+                <a class="btn btn-primary" th:href="@{/board/form}">수정</a>
+                <tr th:if="${modifyYn == 'Y'}">
+                    <button type="button" class="btn btn-danger" role="alert" th:onclick="deleteBoard()">삭제</button>
+                </tr>
+            </div>
+        </form>
+    </div>
+</main>
+<footer th:replace="fragments/common :: footer"/>
+
+<script type="text/javascript">
+    function writeBoard(){
+        let formData = new FormData($("#form")[0]);
+        console.log("data : "+JSON.stringify(formData));
+
+        //boardFile을 있으면
+        if(document.querySelector('#boardFile')){
+            const boardFile =  document.getElementById('boardFile').files;
+            console.log("boardFile : "+JSON.stringify(boardFile));
+            if (boardFile.length == 0) {
+                formData.delete("boardFile");
+            }
+        }
+
+        if ($("#title").val() == "") {
+            alert("제목을 입력하세요.");
+            $("#title").focus();
+            return false;
+        }
+
+        if ($("#contn").val() == "") {
+            alert("내용을 입력하세요.");
+            $("#contn").focus();
+            return false;
+        }
+
+        if (confirm("등록 하시겠습니까?")) {
+            alert("등록되었습니다.");
+            // 사용자가 확인 버튼을 눌렀을 때 AJAX 호출
+            $.ajax({
+                enctype: 'multipart/form-data',
+                type: 'POST',
+                url: '/board/updateFormAjax',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (res) {
+                    console.log('result', res);
+                    window.location.href = '/board/list';
+                },
+                error: function (res) {
+                    alert("게시글 등록실패");
+                }
+            });
+        } else {
+            alert("취소되었습니다.");
+        }
+    }
+
+    function deleteBoard() {
+        let formData = $common.serializeObject("form"); //
+
+        $.ajax({
+            type: 'POST',
+            url: '/noticeBoard/deleteFormAjax',
+            data: JSON.stringify(formData),           // 전달 데이터 : result(JSON Object)를 문자열로 변환(JSON.stringify)
+            contentType: "application/json; charset=UTF-8",
+            cache : false,
+            success: function(res) {
+                console.log('result', res);
+                alert('삭제되었습니다');
+                window.location.href = '/board/list';
+            },
+            error :  function(res) {
+                alert('게시글 등록 실패');
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

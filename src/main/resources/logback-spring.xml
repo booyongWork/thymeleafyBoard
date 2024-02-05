@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 이 곳에 추가할 기능을 넣는다. -->
+    <property name="LOGS_ABSOLUTE_PATH" value="./logs"/>
+
+    <!--appender(어디에 출력할 지)에서 콘솔에 출력되는 형식을 지정한다.-->
+    <!--pattern 에서 지정한 방식대로 시간과 레벨 등의 설정이 되고난 후 콘솔에 메세지를 출력한다. 해당 append 설정은 STDOUT 이라는 변수명으로 저장해뒀다고 생각하면 된다.-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <!--Info 레벨의 이름을 가진 로그를 저장할 방식을 지정한다.-->
+    <appender name="INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_ABSOLUTE_PATH}/info.log</file>  <!-- 파일을 저장할 경로를 정한다 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch> <!-- 해당 레벨만 기록한다. -->
+            <onMismatch>DENY</onMismatch>  <!-- 다른 수준의 레벨은 기록하지 않는다.(상위 레벨도 기록 안함), 상위 수준의 레벨에 대한 기록을 원하면 ACCEPT 로 하면 기록된다. -->
+        </filter>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern> <!-- 해당 패턴 네이밍으로 현재 로그가 기록됨 -->
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_ABSOLUTE_PATH}/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>  <!-- 해당 패턴 네이밍으로 이전 파일이 기록됨 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize> <!-- 한 파일의 최대 용량 -->
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>180</maxHistory> <!-- 한 파일의 최대 저장 기한 -->
+        </rollingPolicy>
+    </appender>
+
+    <appender name="WARN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_ABSOLUTE_PATH}/warn.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_ABSOLUTE_PATH}/warn.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--Info 레벨의 로그를 콘솔에 출력한다.-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!--로거가 발생될 때, 설정해둔 대상을 파일에 기록한다.-->
+    <logger name="testerController" additivity="false"> <!-- 콘솔에 출력된 testerController 에 대해서 아래 작업을 실행한다.-->
+        <level value = "DEBUG" /> <!-- DEBUG 레벨 이상에서만 실행한다. -->
+        <appender-ref ref="INFO_LOG" />
+        <appender-ref ref="WARN_LOG" />
+    </logger>
+
+    <logger name="org.hibernate.SQL" additivity="false">
+        <level value="DEBUG" />
+        <appender-ref ref="INFO_LOG" />
+    </logger>
+
+    <!-- log4jdbc 옵션 설정 -->
+    <logger name="jdbc" level="OFF" />
+    <!-- 커넥션 open close 이벤트를 로그로 남긴다. -->
+    <logger name="jdbc.connection" level="OFF" />
+    <!-- SQL문만을 로그로 남기며, PreparedStatement일 경우 관련된 argument 값으로 대체된 SQL문이 보여진다. -->
+    <logger name="jdbc.sqlonly" level="INFO" />
+    <!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함한다. -->
+    <logger name="jdbc.sqltiming" level="OFF" />
+    <!--
+        ResultSet을 제외한 모든 JDBC 호출 정보를 로그로 남긴다.
+        많은 양의 로그가 생성되므로 특별히 JDBC 문제를 추적해야 할 필요가 있는 경우를 제외하고는 사용을 권장하지 않는다.
+    -->
+    <logger name="jdbc.audit" level="OFF" />
+    <!-- ResultSet을 포함한 모든 JDBC 호출 정보를 로그로 남기므로 매우 방대한 양의 로그가 생성된다. -->
+    <logger name="jdbc.resultset" level="OFF" />
+    <!-- SQL 결과 조회된 데이터의 table을 로그로 남긴다. -->
+    <logger name="jdbc.resultsettable" level="INFO" />
+
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF"/>
+    <logger name="com.zaxxer.hikari.pool.PoolBase" level="OFF"/>
+    <logger name="org.apache.catalina.startup.DigesterFactory" level="ERROR" />
+    <logger name="org.apache.catalina.util.LifecycleBase" level="ERROR" />
+    <logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN" />
+    <logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN" />
+    <logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN" />
+    <logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR" />
+    <logger name="org.hibernate.validator.internal.util.Version" level="WARN" />
+    <logger name="org.springframework.boot.actuate.endpoint.jmx" level="WARN" />
+    <logger name="org.springframework.web.servlet.DispatcherServlet" level="INFO" />
+    <logger name="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" level="WARN" />
+    <logger name="org.springframework.security.web.util.matcher.AntPathRequestMatcher" level="WARN" />
+    <logger name="org.springframework.security.web.util.matcher.MediaTypeRequestMatcher" level="WARN" />
+    <logger name="org.springframework.security.web.util.matcher.AndRequestMatcher" level="WARN" />
+    <logger name="org.springframework.security.web.util.matcher.NegatedRequestMatcher" level="WARN" />
+    <logger name="org.springframework.security.web.util.matcher.OrRequestMatcher" level="WARN" />
+    <logger name="org.springframework.security.web.savedrequest.DefaultSavedRequest" level="WARN" />
+    <logger name="org.springframework.security.web.FilterChainProxy" level="WARN" />
+    <logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="WARN" />
+    <logger name="org.apache.commons.digester.Digester" level="OFF" />
+
+</configuration>

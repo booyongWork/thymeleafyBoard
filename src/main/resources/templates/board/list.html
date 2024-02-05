@@ -1,0 +1,123 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('게시판')">
+    <title>게시판</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:replace="fragments/common :: menu('noticeBoard')">
+</nav>
+
+<main role="main" class="container">
+
+    <div class="container">
+        <h2>게시판</h2>
+        <div>총 건수 : <span id="totalCnt"></span> </div>
+<!--        <div>총 건수 : <span th:text="${boards[0].recordTotal}"></span> </div>-->
+        <form class="form-inline d-flex justify-content-end" id="form">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="searchText" class="sr-only">검색</label>
+                <input type="text" class="form-control" id="searchText" name="searchText">
+                <input type="text" style="display:none;"/>
+            </div>
+            <button type="button" onclick="golistAjax()" class="btn btn-secondary mb-2">검색</button>
+        </form>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">제목</th>
+                <th scope="col">작성자</th>
+            </tr>
+            </thead>
+            <tbody id="content">
+<!--            <tr th:each="board : ${boards}">-->
+<!--                <td th:text="${board.getRowNum()}">Mark</td>-->
+<!--                <td><a th:text="${board.title}" th:href="@{/noticeBoard/form(id=${board.id}, modifyYn=${'Y'})}">Otto</a></td>-->
+<!--&lt;!&ndash;                <td th:text="${board.userId}">더블루션</td>&ndash;&gt;-->
+<!--                <td>admin</td>-->
+<!--            </tr>-->
+            </tbody>
+        </table>
+        <div class="text-right">
+            <a type="button" class="btn btn-primary" th:href="@{/board/form}">쓰기</a>
+        </div>
+        <div class="paging" id="paging" data-page-index="1" data-page-size="10">
+        </div>
+    </div>
+
+</main><!-- /.container -->
+<footer th:replace="fragments/common :: footer"/>
+</body>
+
+<script type="text/javascript">
+    $(function () {
+        makeSearchData();
+
+        $("#searchText").on("keyup", function(e) {
+            if (e.key === "Enter") {
+                makeSearchData();
+            }
+        });
+    });
+
+    function makeSearchData() {
+        $(".paging").data("search", $("#searchText").val());
+        $(".paging").data("pageIndex", "1");
+        $(".paging").data("pageSize", "10");
+        golistAjax();
+    }
+    function golistAjax(){
+        let params = {
+            "searchText" : $("#searchText").val(),
+            "pageIndex" : $(".paging").data("pageIndex"),
+            "pageSize" : $(".paging").data("pageSize"),
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/board/listAjax',
+            data : params,
+            cache : false,
+            success: function(res) {
+                let list = res.data || [];
+
+                //총 건수
+                document.getElementById("totalCnt").innerText = list[0].recordTotal;
+
+                //리스트 내용 설정
+                $("#content").empty();
+                if (list.length > 0) {
+                    let tbody = getDataToHtml(list);
+                    $("#totalCount").text(list[0].recordTotal);
+                    $("#content").append(tbody);
+                } else {
+                    $("#totalCount").text(0);
+                    $("#content").append(`<tr><td class="nodata_notice" colspan="\${$("thead tr").children().length}">데이터가 존재하지 않습니다.</td></tr>`);
+                }
+
+                $common.paging(list,   golistAjax.name);
+            },
+            error :  function(res) {
+                alert(res.resultMsg);
+            }
+        });
+    };
+
+    // 공지 목록 HTML 생성
+    function getDataToHtml(list) {
+        let contents = "";
+
+        list.forEach(item => {
+            contents +=
+                `<tr onclick="javascript:goDetail('\${item.noticeId}');">
+                  <td>${item.rowNum}</td>
+                  <td><a href="/board/view?bbsSeq=${item.bbsSeq}&modifyYn=Y">${item.title}</a></td>
+                   <td>admin</td>
+              	 </tr>`;
+        });
+
+        return contents;
+    }
+
+</script>
+</html>

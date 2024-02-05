@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.blucean.solution.common.mapper.CommonMapper">
+
+    <sql id="paging_prefix">
+        <![CDATA[
+        SELECT
+        	RESULT_TBL.*
+        FROM
+            (
+                SELECT ROW_NUMBER() OVER() AS ROW_NUM
+                    , COUNT(1) OVER() AS RECORD_TOTAL
+                    ,  #{pageSize}  AS PAGE_SIZE
+                    , SUB_TBL.*
+                FROM
+                (
+        ]]>        
+	</sql>
+
+    <sql id="paging_suffix">
+                ) SUB_TBL
+            ) RESULT_TBL
+        WHERE ROW_NUM BETWEEN #{startRow} AND #{endRow}
+    </sql>
+
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<contextName>${HOSTNAME}</contextName>
+
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+
+    <!-- 공통 프로퍼티 -->
+    <property name="LOGS_ABSOLUTE_PATH" value="C:/logs/blucean/portal/logs"></property>
+    <property name="LOGS_PATTERN_DEFAULT" value="[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread][%-5level][%logger] - %msg%n"></property>
+
+
+    <!--appender - 콘솔 출력형식 지정-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>[%clr(%d{yyyy-MM-dd HH:mm:ss}:%-3relative){blue}][%clr(%thread){yellow}][%clr(%-5level)]%clr(%logger{36}){magenta} - %msg%n%ex{full}</Pattern>
+        </layout>
+    </appender>
+
+    <!-- appender - 기본 저장방식 지정 -->
+    <appender name="DEF_LOG_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_ABSOLUTE_PATH}/${HOSTNAME}_info.log</file>  <!-- 파일을 저장할 경로를 정한다 -->
+<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+<!--            <level>DEBUG</level>-->
+<!--        </filter>-->
+        <encoder><pattern>${LOGS_PATTERN_DEFAULT}</pattern></encoder><!-- 로그 기록 패턴 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_ABSOLUTE_PATH}/${HOSTNAME}_info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>  <!-- 해당 패턴 네이밍으로 이전 파일이 기록됨 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize> <!-- 한 파일의 최대 용량 -->
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>180</maxHistory> <!-- 한 파일의 최대 저장 기한 -->
+        </rollingPolicy>
+    </appender>
+
+    <!-- appender - ERROR 레벨의 저장방식 지정 -->
+    <appender name="ERROR_LOG_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_ABSOLUTE_PATH}/${HOSTNAME}_error.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch><!-- 해당 레벨만 기록한다. -->
+            <onMismatch>DENY</onMismatch><!-- 다른 수준의 레벨은 기록하지 않는다.(상위 레벨도 기록 안함), 상위 수준의 레벨에 대한 기록을 원하면 ACCEPT 로 하면 기록된다. -->
+        </filter>
+        <encoder><pattern>${LOGS_PATTERN_DEFAULT}</pattern></encoder><!-- 로그 기록 패턴 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_ABSOLUTE_PATH}/${HOSTNAME}_error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>            <!-- 콘솔에 출력한다.-->
+        <appender-ref ref="DEF_LOG_APPENDER"/>  <!-- 기본 로그 저장 Appender -->
+        <appender-ref ref="ERROR_LOG_APPENDER"/><!-- Error 로그 저장 Appender -->
+    </root>
+
+    <logger name="org.hibernate.SQL" additivity="false">
+        <appender-ref ref="DEF_LOG_APPENDER" />
+    </logger>
+
+    <logger name="jdbc" level="OFF" />              <!-- log4jdbc 옵션 설정 -->
+    <logger name="jdbc.connection" level="OFF" />   <!-- 커넥션 open close 이벤트를 로그로 남긴다. -->
+    <logger name="jdbc.sqlonly" level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </logger>    <!-- SQL문만을 로그로 남기며, PreparedStatement일 경우 관련된 argument 값으로 대체된 SQL문이 보여진다. -->
+    <logger name="jdbc.sqltiming" level="OFF" />    <!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함한다. -->
+
+    <!--
+        ResultSet을 제외한 모든 JDBC 호출 정보를 로그로 남긴다.
+        많은 양의 로그가 생성되므로 특별히 JDBC 문제를 추적해야 할 필요가 있는 경우를 제외하고는 사용을 권장하지 않는다.
+    -->
+    <logger name="jdbc.audit" level="OFF" />
+    <logger name="jdbc.resultset" level="OFF" />        <!-- ResultSet을 포함한 모든 JDBC 호출 정보를 로그로 남기므로 매우 방대한 양의 로그가 생성된다. -->
+    <logger name="jdbc.resultsettable" level="DEBUG" />  <!-- SQL 결과 조회된 데이터의 table을 로그로 남긴다. -->
+
+
+	<!--
+	   LoggingAspect의 TRACE_LOGGER를 위한 추가 
+    -->
+	<appender name="traceRollingFileAppend" class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+				<Pattern>%msg%n</Pattern>
+			</encoder>
+
+			<file>${LOGS_ABSOLUTE_PATH}/${HOSTNAME}_trace.log</file>
+
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+				<fileNamePattern>${LOGS_ABSOLUTE_PATH}/${HOSTNAME}_trace.log.%d{yyyy-MM-dd_HHmm}.%i</fileNamePattern>
+
+				<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+					<maxFileSize>100MB</maxFileSize>
+				</timeBasedFileNamingAndTriggeringPolicy>
+
+				<maxHistory>180</maxHistory>
+				<totalSizeCap>500MB</totalSizeCap>
+			</rollingPolicy>
+		</appender>
+	<appender name="traceLogAppend" class="ch.qos.logback.classic.AsyncAppender">
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>10000</queueSize>
+		<appender-ref ref="traceRollingFileAppend" />
+	</appender>
+
+	<logger name="TRACE_LOGGER" level="info" additivity="false">
+			<appender-ref ref="traceLogAppend" />
+	</logger>
+	
+</configuration>
