@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -29,8 +28,6 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -90,10 +87,9 @@ public class BoardController {
 
     /**
      * 게시판 파일 다운로드
-     *
      */
     @GetMapping("/downloadFile")
-    public void downloadFile(HttpServletRequest req, HttpServletResponse res, @RequestParam("bbsSeq") int bbsSeq, @RequestParam(value = "attachFileSeq", required = false, defaultValue= "0") int attachFileSeq) throws Exception {
+    public void downloadFile(HttpServletRequest req, HttpServletResponse res, @RequestParam("bbsSeq") int bbsSeq, @RequestParam(value = "attachFileSeq", required = false, defaultValue = "0") int attachFileSeq) throws Exception {
         // fileNo를 이용해 파일 정보를 조회
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setBbsSeq(bbsSeq);
@@ -106,23 +102,23 @@ public class BoardController {
         }
 
         //전체 다운로드
-        if(attachFileSeq == 0){
+        if (attachFileSeq == 0) {
             //압축할 파일
             List<AttchVO> fileList = reqBoardDetailVO.getUploadBoardFile();
 
             //생성되는 zip 파일명
-            String fileName =reqBoardDetailVO.getTitle()+"File";
+            String fileName = reqBoardDetailVO.getTitle() + "File";
 
             res.setContentType("application/octet-stream");
-            fileName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
-            res.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8),StandardCharsets.ISO_8859_1)+".zip" + ";");
+            fileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
+            res.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + ".zip" + ";");
             res.setStatus(HttpServletResponse.SC_OK);
 
             try (ZipOutputStream zos = new ZipOutputStream(res.getOutputStream())) {
 
                 for (AttchVO files : fileList) {
 
-                    String fullPath = files.getFilePath()+ "/" +files.getSaveFileNm();
+                    String fullPath = files.getFilePath() + "/" + files.getSaveFileNm();
                     String originalFileName = files.getAttachFileNm();
 
                     try (FileInputStream fis = new FileInputStream(fullPath)) {
@@ -143,11 +139,11 @@ public class BoardController {
 
                 e.printStackTrace();
 
-            } catch (Exception  e) {
+            } catch (Exception e) {
 
                 e.printStackTrace();
             }
-        }else{ //개별 다운로드
+        } else { //개별 다운로드
             //attachFileSeq의 파일 상세 내용 조회
             AttchDTO attchDTO = new AttchDTO();
             attchDTO.setBbsSeq(bbsSeq);
@@ -156,10 +152,10 @@ public class BoardController {
 
             // 파일 경로와 파일명을 합쳐 전체 경로를 생성
             // String fullPath = fileDTO.getFilePath() + "/" + fileDTO.getFileName();
-            String fullPath = fileDetail.getFilePath()+ "/" +fileDetail.getSaveFileNm();
+            String fullPath = fileDetail.getFilePath() + "/" + fileDetail.getSaveFileNm();
             String originalFileName = fileDetail.getAttachFileNm();
 
-            log.info("fullPath : {}",  fullPath);
+            log.info("fullPath : {}", fullPath);
 
             // 파일 객체를 생성하고 파일을 byte 배열로 읽음
             File file = new File(fullPath);
@@ -181,12 +177,22 @@ public class BoardController {
         }
     }
 
-    @GetMapping(value = "/images/{filename}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
-    public ResponseEntity<Resource> showImage(@PathVariable String filename) throws MalformedURLException {
-        Resource resource = boardService.loadImage(filename);
-        return ResponseEntity.ok()
-                .contentType(MediaTypeFactory.getMediaType(resource).orElse(MediaType.APPLICATION_OCTET_STREAM))
-                .body(resource);
-    }
+    // 이미지 요청을 처리하는 컨트롤러
+    @GetMapping(value = "/media/{type}/{filename}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
+    public ResponseEntity<Resource> showMedia(@PathVariable String type, @PathVariable String filename) throws MalformedURLException {
 
+        if (type.equalsIgnoreCase("image")) {
+            Resource imageResource = boardService.loadImage(filename);
+            return ResponseEntity.ok()
+                    .contentType(MediaTypeFactory.getMediaType(imageResource).orElse(MediaType.APPLICATION_OCTET_STREAM))
+                    .body(imageResource);
+        } else if (type.equalsIgnoreCase("video")) {
+            Resource videoResource = boardService.loadVideo(filename);
+            return ResponseEntity.ok()
+                    .contentType(MediaTypeFactory.getMediaType(videoResource).orElse(MediaType.APPLICATION_OCTET_STREAM))
+                    .body(videoResource);
+        } else {
+            throw new IllegalArgumentException("Unsupported media type: " + type);
+        }
+    }
 }

@@ -84,4 +84,5 @@ public class BoardVO extends BaseCommonEntity {
     private String userNm;
 
     private String imgYn;
+    private String type;
 }

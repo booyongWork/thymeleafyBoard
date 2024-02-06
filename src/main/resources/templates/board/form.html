@@ -29,11 +29,10 @@
                 내용 에러 메시지
             </div>
 
-            <!-- 내용 ToastUI -->
-            <input type="hidden" name="contn" id="contn" th:classappend="${#fields.hasErrors('contn')} ? 'is-invalid'">
-            <div id="editor" style="width:1000px;"></div>
-            <div id="viewer" style="width:1000px; display: none; padding: 0.875rem 1.125rem; background-color: #e0e5ec;" class ="form-control"></div>
-            <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+            <!-- 내용 입력란 -->
+            <textarea id="contn" name="contn" class="form-control" th:classappend="${#fields.hasErrors('contn')} ? 'is-invalid'"
+                      th:field="*{contn}"
+                      style="width: 1000px; height: 300px;"></textarea>
         </div>
         <tr th:if="${boardDetail.uploadBoardFile != null && boardDetail.uploadBoardFile.size > 0}" th:each="detail : ${boardDetail.uploadBoardFile}">
             <div class="form-control" style="width: 1000px;" id="fileContent">

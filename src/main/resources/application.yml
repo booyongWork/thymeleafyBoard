@@ -7,6 +7,10 @@ spring:
     jdbc-url: jdbc:postgresql://localhost:5432/postgres?serverTimezone=Asia/Seoul
     username: postgres
     password: 1234
+  servlet:
+    multipart:
+      max-file-size: 12MB
+      max-request-size: 12MB
 
 mybatis:
   type-aliases-package : com.blucean.solution.**.dto

@@ -114,4 +114,5 @@ public class BoardDTO extends BaseCommonEntity {
     private String userNm;
 
     private String imgYn;
+    private String type;
 }

@@ -32,4 +32,5 @@ public class AttchVO {
 
     /*사용여부*/
     private String useYn;
+    private String type;
 }

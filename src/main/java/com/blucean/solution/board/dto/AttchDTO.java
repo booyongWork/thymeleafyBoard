@@ -31,4 +31,5 @@ public class AttchDTO {
 
     /*사용여부*/
     private String useYn;
+    private String type;
 }

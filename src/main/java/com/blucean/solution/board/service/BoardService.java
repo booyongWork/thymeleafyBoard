@@ -92,10 +92,9 @@ public class BoardService {
     public BoardVO boardDetail(BoardDTO boardDTO) throws CustomException {
         log.debug("################ BoardService.boardDetail ################");
         BoardDTO boardDetail = boardMapper.boardDetail(boardDTO);
-//        boardDetail.setContn(CommonUtil.getDeRplcAll(boardDetail.getContn()));
+
         // 조회된 정보를 담을 ReqBoardVO 객체를 생성
-        BoardVO resultVO;
-        resultVO = new BoardVO();
+        BoardVO resultVO = new BoardVO();
         resultVO.setBbsSeq(boardDetail.getBbsSeq());
         resultVO.setBbsId(boardDetail.getBbsId());
         resultVO.setBbsGrpSeq(boardDetail.getBbsGrpSeq());
@@ -118,12 +117,11 @@ public class BoardService {
         // 첨부파일 정보를 조회
         List<AttchDTO> fileList = boardMapper.selectBoardFileList(boardDTO.getBbsSeq());
 
-        AttchVO attchVO;
         List<AttchVO> result = new ArrayList<>();
 
         // 조회된 첨부파일 정보를 AttchVO 객체에 담아 리스트에 추가
         for(AttchDTO attchDTO : fileList) {
-            attchVO = new AttchVO();
+            AttchVO attchVO = new AttchVO();
             attchVO.setBbsSeq(attchDTO.getBbsSeq());
             attchVO.setBbsId(attchDTO.getBbsId());
             attchVO.setAttachFileNm(attchDTO.getAttachFileNm());
@@ -131,14 +129,34 @@ public class BoardService {
             attchVO.setFilePath(attchDTO.getFilePath());
             attchVO.setAttachFileSeq(attchDTO.getAttachFileSeq());
 
+            // 파일 확장자에 따라 파일 유형 설정
+            String saveFileNm = attchDTO.getSaveFileNm();
+            if (saveFileNm != null && !saveFileNm.isEmpty()) {
+                String extension = saveFileNm.substring(saveFileNm.lastIndexOf(".") + 1).toLowerCase();
+                if (extension.equals("jpg") || extension.equals("png") || extension.equals("gif")) {
+                    attchVO.setType("image");
+                } else if (extension.equals("mp3")) {
+                    attchVO.setType("audio");
+                } else if (extension.equals("mp4") || extension.equals("avi") || extension.equals("mov")) {
+                    attchVO.setType("video");
+                } else {
+                    attchVO.setType("other");
+                }
+            } else {
+                attchVO.setType("unknown");
+            }
+
             result.add(attchVO);
         }
+
         // result 리스트를 resultVO의 fileList 필드에 저장하고 resultVO를 반환
         resultVO.setUploadBoardFile(result);
         resultVO.setFileUrl(result.get(0).getSaveFileNm());
+        resultVO.setType(result.get(0).getType());
 
         return resultVO;
     }
+
 
     /**
      * 게시판 등록
@@ -389,6 +407,28 @@ public class BoardService {
         // 이미지 파일이 존재하고 읽을 수 있는지 확인
         if (!resource.exists() || !resource.isReadable()) {
             throw new RuntimeException("이미지 파일을 읽을 수 없습니다.");
+        }
+
+        return resource;
+    }
+
+    public Resource loadVideo(String filename) throws MalformedURLException {
+        // 비디오 파일의 실제 경로를 가져옴
+        // 확장자 추출
+        String extension = filename.substring(filename.lastIndexOf('.') + 1);
+
+        // 확장자에 해당하는 폴더 경로 생성
+        String folderPath = Paths.get(this.filePath, extension).toString();
+
+        // 파일 경로 생성
+        Path filePath = Paths.get(folderPath, filename).normalize();
+
+        // 리소스 로드
+        Resource resource = new UrlResource(filePath.toUri());
+
+        // 비디오 파일이 존재하고 읽을 수 있는지 확인
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new RuntimeException("비디오 파일을 읽을 수 없습니다.");
         }
 
         return resource;
