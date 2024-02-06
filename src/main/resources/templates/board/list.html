@@ -4,7 +4,7 @@
     <title>게시판</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:replace="fragments/common :: menu('noticeBoard')">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:replace="fragments/common :: menu('board')">
 </nav>
 
 <main role="main" class="container">
@@ -12,14 +12,13 @@
     <div class="container">
         <h2>게시판</h2>
         <div>총 건수 : <span id="totalCnt"></span> </div>
-<!--        <div>총 건수 : <span th:text="${boards[0].recordTotal}"></span> </div>-->
-<!--        <form class="form-inline d-flex justify-content-end" id="form">-->
-<!--            <div class="form-group mx-sm-3 mb-2">-->
-<!--                <label for="searchText" class="sr-only">검색</label>-->
-<!--                <input type="text" class="form-control" id="searchText" name="searchText">-->
-<!--            </div>-->
-<!--            <button type="button" onclick="golistAjax()" class="btn btn-secondary mb-2">검색</button>-->
-<!--        </form>-->
+        <form class="form-inline d-flex justify-content-end" id="form">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="searchText" class="sr-only">검색</label>
+                <input type="text" class="form-control" id="searchText" name="searchText">
+            </div>
+            <button type="button" onclick="golistAjax()" class="btn btn-secondary mb-2">검색</button>
+        </form>
         <table class="table">
             <colgroup>
                 <col style="width:15%;"/>
@@ -98,7 +97,7 @@
                     $("#content").append(`<tr><td class="nodata_notice" colspan="\${$("thead tr").children().length}">데이터가 존재하지 않습니다.</td></tr>`);
                 }
 
-                $common.paging(list,   golistAjax.name);
+                $common.paging(list, golistAjax.name);
             },
             error :  function(res) {
                 alert(res.resultMsg);

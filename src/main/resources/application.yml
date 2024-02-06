@@ -9,8 +9,8 @@ spring:
     password: 1234
   servlet:
     multipart:
-      max-file-size: 12MB
-      max-request-size: 12MB
+      max-file-size: 15MB
+      max-request-size: 15MB
 
 mybatis:
   type-aliases-package : com.blucean.solution.**.dto

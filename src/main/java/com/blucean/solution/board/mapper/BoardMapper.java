@@ -23,7 +23,7 @@ public interface BoardMapper {
 
     void fileDelete(AttchDTO attchDTO);
 
-    void boardDelete(BoardDTO boardDTO);
+    void boardDelete(int bbsSeq);
 
 //    List<BoardDTO> boardExcelList(int bbsSeq);
 

@@ -71,14 +71,32 @@
         function writeBoard(){
             // $("#contn").val(editor.getHTML());
             let formData = new FormData($("#form")[0]);
-            console.log("data : "+JSON.stringify(formData));
+            let boardFile;
+            // console.log("data : "+JSON.stringify(formData));
 
             //boardFile을 있으면
             if(document.querySelector('#boardFile')){
-                const boardFile =  document.getElementById('boardFile').files;
-                console.log("boardFile : "+JSON.stringify(boardFile));
+                boardFile =  document.getElementById('boardFile').files;
+                // console.log("boardFile : "+JSON.stringify(boardFile));
                 if (boardFile.length == 0) {
                     formData.delete("boardFile");
+                }
+            }
+
+            // 파일 크기 및 파일 수 제한을 설정합니다.
+            let maxSizeInBytes = 15 * 1024 * 1024; // 15MB (예시로 설정)
+            let maxFiles = 3; // 최대 3개 파일 (예시로 설정)
+
+            // 파일 크기 및 파일 수를 체크합니다.
+            if (boardFile.length > maxFiles) {
+                alert("파일은 최대 " + maxFiles + "개까지 업로드 가능합니다.");
+                return false;
+            }
+
+            for (let i = 0; i < boardFile.length; i++) {
+                if (boardFile[i].size > maxSizeInBytes) {
+                    alert("파일 크기는 최대 " + (maxSizeInBytes / (1024 * 1024)) + "MB까지 업로드 가능합니다.");
+                    return false;
                 }
             }
 
@@ -120,12 +138,8 @@
 
         function deleteBoard() {
             if (confirm("게시글을 삭제하시겠습니까?")) {
-                // 확인 버튼을 누르면 실행됩니다.
-
-                // AJAX 요청을 보내기 위해 FormData 객체를 생성합니다.
-                let formData = new FormData($("#form")[0]);
-
-                // AJAX 요청을 보냅니다.
+                let formData = new FormData();
+                formData.append('bbsSeq', $('[name="bbsSeq"]').val()); // Assuming you have an input field for bbsSeq
                 $.ajax({
                     type: 'POST',
                     url: '/board/deleteFormAjax',
@@ -133,11 +147,15 @@
                     processData: false,
                     contentType: false,
                     success: function (response) {
-                        alert(response);
-                        window.location.href = '/board/list';
+                        if (response && response.resultCd === '0000') {
+                            alert(response.resultMsg); // 서버에서 반환된 메시지를 표시
+                            window.location.href = '/board/list'; // 삭제 후 목록 페이지로 이동
+                        } else {
+                            alert("응답이 올바르지 않습니다.");
+                        }
                     },
-                    error: function () {
-                        alert("게시글 삭제 실패");
+                    error: function (xhr, status, error) {
+                        alert("게시글 삭제 실패: " + xhr.responseText);
                     }
                 });
             }

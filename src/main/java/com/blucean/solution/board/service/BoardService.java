@@ -11,15 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -27,10 +22,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -59,12 +51,12 @@ public class BoardService {
         for(BoardDTO tempDto : boardList) {
             resultVO = new BoardVO();
             resultVO.setBbsSeq(tempDto.getBbsSeq());
-            resultVO.setBbsId(tempDto.getBbsId());
-            resultVO.setBbsGrpSeq(tempDto.getBbsGrpSeq());
-            resultVO.setBbsGrpIdx(tempDto.getBbsGrpIdx());
-            resultVO.setWrtrIp(tempDto.getWrtrId());
-            resultVO.setWrtrNm(tempDto.getWrtrNm());
-            resultVO.setUsrDefine1(tempDto.getUsrDefine1());
+//            resultVO.setBbsId(tempDto.getBbsId());
+//            resultVO.setBbsGrpSeq(tempDto.getBbsGrpSeq());
+//            resultVO.setBbsGrpIdx(tempDto.getBbsGrpIdx());
+//            resultVO.setWrtrIp(tempDto.getWrtrId());
+//            resultVO.setWrtrNm(tempDto.getWrtrNm());
+//            resultVO.setUsrDefine1(tempDto.getUsrDefine1());
             resultVO.setTitle(tempDto.getTitle());
             resultVO.setWrtrDd(tempDto.getWrtrDd());
             resultVO.setLstUpdDdtm(tempDto.getLstUpdDdtm());
@@ -96,19 +88,19 @@ public class BoardService {
         // 조회된 정보를 담을 ReqBoardVO 객체를 생성
         BoardVO resultVO = new BoardVO();
         resultVO.setBbsSeq(boardDetail.getBbsSeq());
-        resultVO.setBbsId(boardDetail.getBbsId());
-        resultVO.setBbsGrpSeq(boardDetail.getBbsGrpSeq());
-        resultVO.setBbsGrpIdx(boardDetail.getBbsGrpIdx());
-        resultVO.setBbsDepth(boardDetail.getBbsDepth());
+//        resultVO.setBbsId(boardDetail.getBbsId());
+//        resultVO.setBbsGrpSeq(boardDetail.getBbsGrpSeq());
+//        resultVO.setBbsGrpIdx(boardDetail.getBbsGrpIdx());
+//        resultVO.setBbsDepth(boardDetail.getBbsDepth());
         resultVO.setTitle(boardDetail.getTitle());
         resultVO.setContn(boardDetail.getContn());
         resultVO.setWrtrId(boardDetail.getWrtrId());
-        resultVO.setWrtrNm(boardDetail.getWrtrNm());
-        resultVO.setWrtrIp(boardDetail.getWrtrIp());
+//        resultVO.setWrtrNm(boardDetail.getWrtrNm());
+//        resultVO.setWrtrIp(boardDetail.getWrtrIp());
         resultVO.setWrtrDd(boardDetail.getWrtrDd());
         resultVO.setWrtrTm(boardDetail.getWrtrTm());
-        resultVO.setUsrDefine1(boardDetail.getUsrDefine1());
-        resultVO.setUsrDefine2(boardDetail.getUsrDefine2());
+//        resultVO.setUsrDefine1(boardDetail.getUsrDefine1());
+//        resultVO.setUsrDefine2(boardDetail.getUsrDefine2());
         resultVO.setLstUpdUsrId(boardDetail.getLstUpdUsrId());
         resultVO.setLstUpdUsrNm(boardDetail.getLstUpdUsrNm());
         resultVO.setLstUpdDdtm(boardDetail.getLstUpdDdtm());
@@ -123,7 +115,7 @@ public class BoardService {
         for(AttchDTO attchDTO : fileList) {
             AttchVO attchVO = new AttchVO();
             attchVO.setBbsSeq(attchDTO.getBbsSeq());
-            attchVO.setBbsId(attchDTO.getBbsId());
+//            attchVO.setBbsId(attchDTO.getBbsId());
             attchVO.setAttachFileNm(attchDTO.getAttachFileNm());
             attchVO.setSaveFileNm(attchDTO.getSaveFileNm());
             attchVO.setFilePath(attchDTO.getFilePath());
@@ -189,7 +181,7 @@ public class BoardService {
             // 수정모드일 경우 기존 첨부파일 삭제 처리
             attchDTO.setBbsSeq(boardDTO.getBbsSeq());
             attchDTO.setAttachFileSeqList(boardDTO.getAttachFileSeqList());
-            attchDTO.setBbsId(boardDTO.getBbsId());
+//            attchDTO.setBbsId(boardDTO.getBbsId());
             boardMapper.fileDelete(attchDTO);
 
             //새로운 파일 추가 시
@@ -220,7 +212,7 @@ public class BoardService {
                         uploadDirWithExtension.mkdir();
                     }
 
-                    attchDTO.setBbsId(boardDTO.getBbsId());
+//                    attchDTO.setBbsId(boardDTO.getBbsId());
                     attchDTO.setAttachFileNm(originalFilename);
                     attchDTO.setFilePath(uploadPathWithExtension);
                     attchDTO.setSaveFileNm(uploadFilename);
@@ -230,7 +222,7 @@ public class BoardService {
                 // 첨부파일 정보 DB에 저장
                 for (AttchDTO file : fileList) {
                     file.setBbsSeq(boardDTO.getBbsSeq());
-                    file.setBbsId(boardDTO.getBbsId());
+//                    file.setBbsId(boardDTO.getBbsId());
                     boardMapper.insertBoardFileList(file);
                 }
 
@@ -298,7 +290,7 @@ public class BoardService {
                         uploadDirWithExtension.mkdir();
                     }
 
-                    attchDTO.setBbsId(boardDTO.getBbsId());
+//                    attchDTO.setBbsId(boardDTO.getBbsId());
                     attchDTO.setAttachFileNm(originalFilename);
                     attchDTO.setFilePath(uploadPathWithExtension);
                     attchDTO.setSaveFileNm(uploadFilename);
@@ -309,7 +301,7 @@ public class BoardService {
 
                 for (AttchDTO file : fileList) {
                     file.setBbsSeq(boardDTO.getBbsSeq());
-                    file.setBbsId(boardDTO.getBbsId());
+//                    file.setBbsId(boardDTO.getBbsId());
                     boardMapper.insertBoardFileList(file);
                 }
 
@@ -379,12 +371,15 @@ public class BoardService {
      * 게시판 삭제
      *
      */
-    public void boardDelete(BoardDTO boardDTO) throws CustomException {
+    public void boardDelete(int bbsSeq) throws CustomException {
         log.debug("################ BoardService.boardDelete ################");
         AttchDTO attchDTO = new AttchDTO();
-        attchDTO.setBbsSeq(boardDTO.getBbsSeq());
+        attchDTO.setBbsSeq(bbsSeq);
+        if (attchDTO.getAttachFileSeqList() == null || attchDTO.getAttachFileSeqList().isEmpty()) {
+            attchDTO.setAttachFileSeqList(Collections.singletonList(0)); // or any other default value
+        }
         boardMapper.fileDelete(attchDTO);
-        boardMapper.boardDelete(boardDTO);
+        boardMapper.boardDelete(bbsSeq);
 
     }
 

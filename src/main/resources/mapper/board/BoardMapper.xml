@@ -5,12 +5,7 @@
         <include refid="com.blucean.solution.common.mapper.CommonMapper.paging_prefix"/>
         SELECT DISTINCT
               A.BBS_SEQ
-            , A.BBS_ID
-            , A.BBS_GRP_SEQ
-            , A.BBS_GRP_IDX
             , A.WRTR_ID
-            , A.WRTR_NM
-            , A.USR_DEFINE1
             , A.TITLE
             , A.INQ_CNT
             , TO_CHAR(TO_DATE(A.WRTR_DD, 'YYYYMMDD'), 'YYYY-MM-DD') AS WRTR_DD
@@ -18,9 +13,8 @@
             , B.USE_YN AS IMG_YN
         FROM BOARD A LEFT OUTER JOIN ATTCH B
         ON (A.BBS_SEQ = B.BBS_SEQ)
-
         <if test='searchText != null and !"".equals(searchText)'>
-            AND (A.TITLE LIKE '%' || #{searchText} || '%' OR A.CONTN LIKE '%' || #{searchText} || '%')
+            WHERE (A.TITLE LIKE '%' || #{searchText} || '%' OR A.CONTN LIKE '%' || #{searchText} || '%')
         </if>
         ORDER BY A.BBS_SEQ DESC
         <include refid="com.blucean.solution.common.mapper.CommonMapper.paging_suffix"/>
@@ -29,19 +23,11 @@
     <select id="boardDetail"  parameterType="int" resultType="BoardDTO" >
         SELECT
               BBS_SEQ
-            , BBS_ID
-            , BBS_GRP_SEQ
-            , BBS_GRP_IDX
-            , BBS_DEPTH
             , TITLE
             , CONTN
             , WRTR_ID
-            , WRTR_NM
-            , WRTR_IP
             , WRTR_DD
             , WRTR_TM
-            , USR_DEFINE1
-            , USR_DEFINE2
             , LST_UPD_USR_ID
             , LST_UPD_USR_NM
             , LST_UPD_DDTM
@@ -58,26 +44,16 @@
 
         INSERT INTO BOARD
         (
-              BBS_ID
-            , BBS_GRP_SEQ
-            , BBS_GRP_IDX
-            , BBS_DEPTH
-            , TITLE
+             TITLE
             , CONTN
             , WRTR_ID
-            , WRTR_NM
             , WRTR_DD
             , WRTR_TM
             , LST_UPD_DDTM
         ) VALUES (
-              #{bbsId}
-            , (SELECT COALESCE(MAX(BBS_GRP_SEQ)+1, 1) FROM BOARD WHERE BBS_ID = #{bbsId})
-            , #{bbsGrpIdx}
-            , 1
-            , #{title}
+             #{title}
             , #{contn}
             , #{wrtrId}
-            , #{wrtrNm}
             , to_char(now(),'YYYYMMDD')
             , to_char(now(),'HH24MISS')
             , to_char(now(),'YYYYMMDDHH24MI')
@@ -86,12 +62,12 @@
 
     <update id="boardUpdate" parameterType="BoardDTO">
         UPDATE BOARD
-        SET title = #{title}
-          , contn = #{contn}
+        SET TITLE = #{title}
+          , CONTN = #{contn}
         WHERE BBS_SEQ = #{bbsSeq}
     </update>
 
-    <delete id="boardDelete" parameterType="BoardDTO">
+    <delete id="boardDelete" parameterType="int">
         DELETE from BOARD
         where BBS_SEQ = #{bbsSeq}
     </delete>
@@ -101,7 +77,6 @@
         INSERT INTO ATTCH
         (
               BBS_SEQ
-            , BBS_ID
             , ATTACH_FILE_NM
             , SAVE_FILE_NM
             , FILE_PATH
@@ -110,7 +85,6 @@
         VALUES
             (
                   #{bbsSeq}
-                , #{bbsId}
                 , #{attachFileNm}
                 , #{saveFileNm}
                 , #{filePath}
@@ -122,7 +96,6 @@
     <select id="selectBoardFileList" parameterType="int" resultType="AttchDTO">
         SELECT
                BBS_SEQ
-             , BBS_ID
              , ATTACH_FILE_NM
              , FILE_PATH
              , SAVE_FILE_NM
@@ -152,47 +125,32 @@
         WHERE BBS_SEQ = #{bbsSeq}
     </update>
 
-    <select id="selectNoticeList" parameterType="hashmap" resultType="BoardDTO">
-        /* ReqBoardMapper.selectNoticeList */
-        SELECT tdb.*
-             , (SELECT ARRAY_TO_STRING(ARRAY_AGG(attach_file_nm), ',')
-                FROM tb_dpm_attch tda
-                WHERE tda.bbs_seq = tdb.bbs_seq) AS attach_file_nm
-        FROM BOARD tdb
-        WHERE bbs_id = #{bbsId}
-          AND 'Y' = EXISTS(SELECT COUNT(1) FROM tb_dpm_menu WHERE menu_id = '1' AND auth_cd = #{authCd})
-        ORDER BY TO_TIMESTAMP(wrtr_dd || ' ' || wrtr_tm, 'YYYYMMDD HH24MISS') DESC
-            LIMIT 5
-    </select>
-
     <select id="selectFileListNotIn" parameterType="BoardDTO"  resultType="AttchDTO">
         /*BoardMapper.selectFileListNotIn*/
         SELECT
-        BBS_SEQ
-        , BBS_ID
-        , ATTACH_FILE_NM
-        , FILE_PATH
-        , SAVE_FILE_NM
-        , ATTACH_FILE_SEQ
+              BBS_SEQ
+            , ATTACH_FILE_NM
+            , FILE_PATH
+            , SAVE_FILE_NM
+            , ATTACH_FILE_SEQ
         FROM
         ATTCH
         WHERE
         <if test="attachFileSeqList != null and !attachFileSeqList.isEmpty()">
-            attach_file_seq not in
+            ATTACH_FILE_SEQ not in
             <foreach collection="attachFileSeqList" item="arr" open="(" close=")" separator=",">
                 #{arr}
             </foreach>
             and
         </if>
-        bbs_seq = #{bbsSeq}
+        BBS_SEQ = #{bbsSeq}
     </select>
 
     <!-- 파일 상태정보   -->
     <select id="fileDetail" parameterType="AttchDTO"  resultType="AttchDTO">
         /*BoardMapper.fileDetail*/
         SELECT
-            BBS_SEQ
-             , BBS_ID
+               BBS_SEQ
              , ATTACH_FILE_NM
              , FILE_PATH
              , SAVE_FILE_NM
@@ -200,7 +158,7 @@
         FROM
             ATTCH
         WHERE
-            attach_file_seq = #{attachFileSeq}
-          and bbs_seq = #{bbsSeq}
+            ATTACH_FILE_SEQ = #{attachFileSeq}
+          and BBS_SEQ = #{bbsSeq}
     </select>
 </mapper>

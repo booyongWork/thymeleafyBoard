@@ -38,7 +38,7 @@
             <div th:if="${boardDetail.uploadBoardFile != null && boardDetail.uploadBoardFile.size() > 0}">
                 <label>첨부 파일</label>
                 <tr th:each="detail : ${boardDetail.uploadBoardFile}">
-                    <div class="form-control" style="width: 1000px;" id="fileContent" th:readonly="${modifyYn == 'Y'}">
+                    <div class="form-control" style="width: 1100px;" id="fileContent" th:readonly="${modifyYn == 'Y'}">
                         <a th:text="${detail.getAttachFileNm()}"></a>
                     </div>
                 </tr>

@@ -5,8 +5,10 @@ import com.blucean.solution.board.dto.ResponseVO;
 import com.blucean.solution.common.CommonConst;
 import com.blucean.solution.board.dto.BoardDTO;
 import com.blucean.solution.board.service.BoardService;
+import com.blucean.solution.common.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +28,7 @@ class BoardRestController {
      *
      */
     @PostMapping("/listAjax")
-    public ResponseVO<List<BoardVO>> listAjax(HttpServletRequest req, HttpServletResponse res, @ModelAttribute BoardDTO boardDTO) {
+    public ResponseVO<List<BoardVO>> listAjax(@ModelAttribute BoardDTO boardDTO) {
         List<BoardVO> boardVOS;
 
         try {
@@ -42,8 +44,7 @@ class BoardRestController {
      *
      */
     @PostMapping("/updateFormAjax")
-    public ResponseVO<String> updateForm(HttpServletRequest req, HttpServletResponse res,
-                                         @ModelAttribute BoardDTO boardDTO, @RequestParam(value = "boardFile", required = false)  List<MultipartFile> multiFileList) throws Exception {
+    public ResponseVO<String> updateForm(@ModelAttribute BoardDTO boardDTO, @RequestParam(value = "boardFile", required = false)  List<MultipartFile> multiFileList) throws Exception {
 
         boardService.boardWrite(boardDTO, multiFileList);
 
@@ -60,8 +61,8 @@ class BoardRestController {
      *
      */
     @PostMapping("/deleteFormAjax")
-    public ResponseVO<String> deleteForm(HttpServletRequest req, HttpServletResponse res, @RequestBody BoardDTO boardDTO) throws Exception {
-        boardService.boardDelete(boardDTO);
+    public ResponseVO<String> deleteBoard(@RequestParam int bbsSeq) throws CustomException {
+        boardService.boardDelete(bbsSeq);
         return ResponseVO.ok(null, CommonConst.SUCCESS_CODE, "삭제되었습니다."  );
     }
 }
