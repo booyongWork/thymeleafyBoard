@@ -15,15 +15,14 @@
             , A.INQ_CNT
             , TO_CHAR(TO_DATE(A.WRTR_DD, 'YYYYMMDD'), 'YYYY-MM-DD') AS WRTR_DD
             , TO_CHAR(TO_TIMESTAMP(A.LST_UPD_DDTM, 'YYYYMMDDHH24MI'), 'YYYY-MM-DD') AS LST_UPD_DDTM
-            , A.INQ_CNT
             , B.USE_YN AS IMG_YN
         FROM BOARD A LEFT OUTER JOIN ATTCH B
         ON (A.BBS_SEQ = B.BBS_SEQ)
 
-        <if test='searchText != null and !"".equals(searchText) and searchGb =="all"'>
+        <if test='searchText != null and !"".equals(searchText)'>
             AND (A.TITLE LIKE '%' || #{searchText} || '%' OR A.CONTN LIKE '%' || #{searchText} || '%')
         </if>
-        ORDER BY A.BBS_SEQ
+        ORDER BY A.BBS_SEQ DESC
         <include refid="com.blucean.solution.common.mapper.CommonMapper.paging_suffix"/>
     </select>
 
@@ -88,13 +87,13 @@
     <update id="boardUpdate" parameterType="BoardDTO">
         UPDATE BOARD
         SET title = #{title}
-          , content = #{content}
-        WHERE id = #{id}
+          , contn = #{contn}
+        WHERE BBS_SEQ = #{bbsSeq}
     </update>
 
     <delete id="boardDelete" parameterType="BoardDTO">
         DELETE from BOARD
-        where id = #{id}
+        where BBS_SEQ = #{bbsSeq}
     </delete>
 
     <!--파일 첨부-->
@@ -178,11 +177,14 @@
         FROM
         ATTCH
         WHERE
-        attach_file_seq not in
-        <foreach collection="attachFileSeqList" item="arr" open="(" close=")" separator=",">
-            #{arr}
-        </foreach>
-        and bbs_seq = #{bbsSeq}
+        <if test="attachFileSeqList != null and !attachFileSeqList.isEmpty()">
+            attach_file_seq not in
+            <foreach collection="attachFileSeqList" item="arr" open="(" close=")" separator=",">
+                #{arr}
+            </foreach>
+            and
+        </if>
+        bbs_seq = #{bbsSeq}
     </select>
 
     <!-- 파일 상태정보   -->

@@ -13,36 +13,39 @@
         <h2>게시판</h2>
         <div>총 건수 : <span id="totalCnt"></span> </div>
 <!--        <div>총 건수 : <span th:text="${boards[0].recordTotal}"></span> </div>-->
-        <form class="form-inline d-flex justify-content-end" id="form">
-            <div class="form-group mx-sm-3 mb-2">
-                <label for="searchText" class="sr-only">검색</label>
-                <input type="text" class="form-control" id="searchText" name="searchText">
-                <input type="text" style="display:none;"/>
-            </div>
-            <button type="button" onclick="golistAjax()" class="btn btn-secondary mb-2">검색</button>
-        </form>
+<!--        <form class="form-inline d-flex justify-content-end" id="form">-->
+<!--            <div class="form-group mx-sm-3 mb-2">-->
+<!--                <label for="searchText" class="sr-only">검색</label>-->
+<!--                <input type="text" class="form-control" id="searchText" name="searchText">-->
+<!--            </div>-->
+<!--            <button type="button" onclick="golistAjax()" class="btn btn-secondary mb-2">검색</button>-->
+<!--        </form>-->
         <table class="table">
+            <colgroup>
+                <col style="width:15%;"/>
+                <col style="width:auto;"/>
+                <col style="width:15%;"/>
+                <col style="width:25%;"/>
+                <col style="width:10%;"/>
+                <col style="width:10%;"/>
+            </colgroup>
             <thead>
             <tr>
                 <th scope="col">번호</th>
                 <th scope="col">제목</th>
                 <th scope="col">작성자</th>
+                <th scope="col">작성일</th>
+                <th scope="col">조회수</th>
+                <th scope="col">첨부파일</th>
+
             </tr>
             </thead>
-            <tbody id="content">
-<!--            <tr th:each="board : ${boards}">-->
-<!--                <td th:text="${board.getRowNum()}">Mark</td>-->
-<!--                <td><a th:text="${board.title}" th:href="@{/noticeBoard/form(id=${board.id}, modifyYn=${'Y'})}">Otto</a></td>-->
-<!--&lt;!&ndash;                <td th:text="${board.userId}">더블루션</td>&ndash;&gt;-->
-<!--                <td>admin</td>-->
-<!--            </tr>-->
-            </tbody>
+            <tbody id="content"/>
         </table>
         <div class="text-right">
             <a type="button" class="btn btn-primary" th:href="@{/board/form}">쓰기</a>
         </div>
-        <div class="paging" id="paging" data-page-index="1" data-page-size="10">
-        </div>
+        <div class="paging" id="paging" data-page-index="1" data-page-size="10"/>
     </div>
 
 </main><!-- /.container -->
@@ -106,13 +109,19 @@
     // 공지 목록 HTML 생성
     function getDataToHtml(list) {
         let contents = "";
+        let recordTotal = list[0].recordTotal;
 
         list.forEach(item => {
+            let no = (recordTotal+1) - item.rowNum;
+            let imgYn = item.imgYn != null ? `<img class="imgYn" src="/img/free-icon-attachments-304690.png" data-bbsSeq="${item.bbsSeq}">` : '';
             contents +=
                 `<tr onclick="javascript:goDetail('\${item.noticeId}');">
-                  <td>${item.rowNum}</td>
+                  <td>${no}</td>
                   <td><a href="/board/view?bbsSeq=${item.bbsSeq}&modifyYn=Y">${item.title}</a></td>
                    <td>admin</td>
+                   <td>${item.wrtrDd}</td>
+                   <td>${item.inqCnt}</td>
+                   <td style="cursor : pointer;">${imgYn ? imgYn : "-"}</td>
               	 </tr>`;
         });
 

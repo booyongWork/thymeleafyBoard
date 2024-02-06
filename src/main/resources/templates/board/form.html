@@ -16,7 +16,7 @@
 
         <div class="form-group" style="margin-bottom: 20px; margin-top: 10px;">
             <label for="title">요청 제목</label>
-            <input type="text" name="title" class="form-control" style="width:1000px;"
+            <input type="text" name="title" class="form-control" style="width:1100px;"
                    th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"
                    id="title" th:field="*{title}">
             <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
@@ -28,25 +28,29 @@
             <div class="invalid-feedback" th:if="${#fields.hasErrors('contn')}" th:errors="*{contn}">
                 내용 에러 메시지
             </div>
-
-            <!-- 내용 입력란 -->
             <textarea id="contn" name="contn" class="form-control" th:classappend="${#fields.hasErrors('contn')} ? 'is-invalid'"
                       th:field="*{contn}"
-                      style="width: 1000px; height: 300px;"></textarea>
+                      style="width: 1100px; height: 100px;"></textarea>
         </div>
-        <tr th:if="${boardDetail.uploadBoardFile != null && boardDetail.uploadBoardFile.size > 0}" th:each="detail : ${boardDetail.uploadBoardFile}">
-            <div class="form-control" style="width: 1000px;" id="fileContent">
-                <a th:text="${detail.getAttachFileNm()}"></a>
-            </div>
-        </tr>
-        <div class="form-group" style="width: 1000px;">
+        <div>
+            <label>첨부 파일</label>
+            <input type="hidden" class="form-control" name="attachFileSeqList" th:value="0"/>
+            <tr th:if="${boardDetail.uploadBoardFile != null && boardDetail.uploadBoardFile.size > 0}" th:each="detail : ${boardDetail.uploadBoardFile}">
+                <div class="fileContent" style="width: 1000px;">
+                    <input type="hidden" name="attachFileSeqList" th:value="${detail.getAttachFileSeq()}" />
+                    <a th:text="${detail.getAttachFileNm()}"></a>
+                    <button class="fileDelBtn" type="button"  style="margin-left: 10px; border: 1px solid">X</button>
+                </div>
+            </tr>
+        </div>
+        <div class="form-group" style="width: 1100px;">
             <input id="boardFile" type="file" class="form-control" name="boardFile" multiple="multiple"/>
         </div>
         <div class="text-right">
-            <a class="btn btn-primary" th:href="@{/templates/board/list}">취소</a>
-            <button type="button" class="btn btn-primary" th:onclick="writeBoard()">확인</button>
+            <a class="btn btn-primary" th:href="@{/board/list}">취소</a>
+            <button type="button" class="btn btn-primary" onclick="writeBoard()">확인</button>
             <tr th:if="${modifyYn == 'Y'}">
-                <button type="button" class="btn btn-danger" role="alert" th:onclick="deleteBoard()">삭제</button>
+                <button type="button" class="btn btn-danger" role="alert" onclick="deleteBoard()">삭제</button>
             </tr>
         </div>
     </form>
@@ -55,72 +59,17 @@
 <footer th:replace="fragments/common :: footer"/>
 
     <script type="text/javascript">
-        const editor = new toastui.Editor({
-            el: document.querySelector('#editor'),
-            height: '500px',
-            initialEditType : "wysiwyg",
-            toolbarItems : [
-                // 툴바 옵션 설정
-                ['heading', 'bold', 'italic', 'strike'],
-                ['hr', 'quote'],
-                ['ul', 'ol', 'task', 'indent', 'outdent'],
-                ['table', 'link'],
-                ['code', 'codeblock']
-            ]
-            // ,hooks: {
-            //     addImageBlobHook: (blob, callback) => uploadImages(blob, callback)
-            // }
+
+        $(function () {
+            $('.fileDelBtn').on("click", function() {
+                // 클릭된 버튼의 부모 요소 중 클래스가 "fileContent"인 요소를 찾음
+                let fileContent = $(this).closest(".fileContent");
+                fileContent.remove();
+            });
         });
-        editor.setHTML('[(${boardDetail.contn})]');
-
-        //이미지 업로드 시
-        // const uploadImages = (blob, callback) => {
-        //     const formData = new FormData();
-        //     formData.append('image', blob);
-        //
-        //     let url = '/images/';
-        //     $.ajax({
-        //         type: 'POST',
-        //         enctype: 'multipart/form-data',
-        //         url: '/writeTest.do',
-        //         data: formData,
-        //         dataType: 'json',
-        //         processData: false,
-        //         contentType: false,
-        //         cache: false,
-        //         timeout: 600000,
-        //         success: function (data) {
-        //             //console.log('ajax 이미지 업로드 성공');
-        //             url += data.filename;
-        //
-        //             // callback : 에디터(마크다운 편집기)에 표시할 텍스트, 뷰어에는 imageUrl 주소에 저장된 사진으로 나옴
-        //             // 형식 : ![대체 텍스트](주소)
-        //             callback(url, '사진 대체 텍스트 입력');
-        //         },
-        //         error: function (e) {
-        //             //console.log('ajax 이미지 업로드 실패');
-        //             //console.log(e.abort([statusText]));
-        //
-        //             callback('image_load_fail', '사진 대체 텍스트 입력');
-        //         }
-        //     });
-        // }
-
-        //수정 화면이고 작성자와 유저아이디가 같지 않을때 뷰어로 그려짐 readonly
-        // if("[(${modifyYn})]" == "Y"){
-        //     const viewer = toastui.Editor.factory({
-        //         el: document.querySelector('#viewer'),
-        //         viewer: true,
-        //         height: '500px',
-        //         initialValue :'[(${boardDetail.contn})]'
-        //
-        //     });
-        //     document.getElementById("editor").style.display = "none";
-        //     document.getElementById("viewer").style.display = "block";
-        // }
 
         function writeBoard(){
-            $("#contn").val(editor.getHTML());
+            // $("#contn").val(editor.getHTML());
             let formData = new FormData($("#form")[0]);
             console.log("data : "+JSON.stringify(formData));
 
@@ -170,24 +119,28 @@
         }
 
         function deleteBoard() {
+            if (confirm("게시글을 삭제하시겠습니까?")) {
+                // 확인 버튼을 누르면 실행됩니다.
 
-            let formData = $common.serializeObject("form"); //
+                // AJAX 요청을 보내기 위해 FormData 객체를 생성합니다.
+                let formData = new FormData($("#form")[0]);
 
-            $.ajax({
-                type: 'POST',
-                url: '/noticeBoard/deleteFormAjax',
-                data: JSON.stringify(formData),           // 전달 데이터 : result(JSON Object)를 문자열로 변환(JSON.stringify)
-                contentType: "application/json; charset=UTF-8",
-                cache : false,
-                success: function(res) {
-                    console.log('result', res);
-                    alert('삭제되었습니다');
-                    window.location.href = '/board/list';
-                },
-                error :  function(res) {
-                    alert('게시글 등록 실패');
-                }
-            });
+                // AJAX 요청을 보냅니다.
+                $.ajax({
+                    type: 'POST',
+                    url: '/board/deleteFormAjax',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        alert(response);
+                        window.location.href = '/board/list';
+                    },
+                    error: function () {
+                        alert("게시글 삭제 실패");
+                    }
+                });
+            }
         }
     </script>
 </body>

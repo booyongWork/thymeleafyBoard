@@ -3,8 +3,8 @@ server:
 
 spring:
   datasource:
-    driver-class-name: org.postgresql.Driver
-    jdbc-url: jdbc:postgresql://localhost:5432/postgres?serverTimezone=Asia/Seoul
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    jdbc-url: jdbc:log4jdbc:postgresql://localhost:5432/postgres?serverTimezone=Asia/Seoul
     username: postgres
     password: 1234
   servlet:

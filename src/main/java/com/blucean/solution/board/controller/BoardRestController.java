@@ -54,4 +54,14 @@ class BoardRestController {
         }
 
     }
+
+    /**
+     * 게시판 삭제
+     *
+     */
+    @PostMapping("/deleteFormAjax")
+    public ResponseVO<String> deleteForm(HttpServletRequest req, HttpServletResponse res, @RequestBody BoardDTO boardDTO) throws Exception {
+        boardService.boardDelete(boardDTO);
+        return ResponseVO.ok(null, CommonConst.SUCCESS_CODE, "삭제되었습니다."  );
+    }
 }

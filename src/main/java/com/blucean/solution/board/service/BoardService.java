@@ -149,10 +149,13 @@ public class BoardService {
             result.add(attchVO);
         }
 
-        // result 리스트를 resultVO의 fileList 필드에 저장하고 resultVO를 반환
-        resultVO.setUploadBoardFile(result);
-        resultVO.setFileUrl(result.get(0).getSaveFileNm());
-        resultVO.setType(result.get(0).getType());
+        if (!CollectionUtils.isEmpty(result)) {
+            resultVO.setUploadBoardFile(result);
+            if (!result.get(0).getSaveFileNm().isEmpty() && result.get(0).getType() != null) {
+                resultVO.setFileUrl(result.get(0).getSaveFileNm());
+                resultVO.setType(result.get(0).getType());
+            }
+        }
 
         return resultVO;
     }
@@ -189,31 +192,37 @@ public class BoardService {
             attchDTO.setBbsId(boardDTO.getBbsId());
             boardMapper.fileDelete(attchDTO);
 
-
             //새로운 파일 추가 시
             if (!CollectionUtils.isEmpty(multiFileList)) {
-
                 // 파일 정보 저장을 위한 리스트 생성
                 List<AttchDTO> fileList = new ArrayList<>();
 
-                // 파일 업로드 경로 지정 및 폴더 생성
-                String uploadPath = filePath;
+                // 파일 업로드 처리 및 정보 저장
+                String uploadPath = filePath; // 업로드 경로 설정
 
-                File uploadDir = new File(uploadPath);
+                File uploadDir = new File(uploadPath); // 업로드 디렉토리
                 if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
+                    uploadDir.mkdir(); // 디렉토리가 존재하지 않으면 생성
                 }
 
-                // 파일 업로드 및 정보 저장
                 for(int i = 0; i < multiFileList.size(); i++) {
+                    attchDTO = new AttchDTO();
                     String originalFilename = multiFileList.get(i).getOriginalFilename();
                     String uploadFilename = UUID.randomUUID() + "_" + originalFilename;
+                    // 확장자 추출
+                    String fileExtension = getFileExtension(originalFilename);
+                    // 업로드 경로 설정 - 각 확장자별로 폴더 생성
+                    String uploadPathWithExtension = uploadPath + "/" + fileExtension;
+                    File uploadDirWithExtension = new File(uploadPathWithExtension);
 
-                    // 첨부파일 정보 저장
-                    attchDTO = new AttchDTO();
+                    // 해당 확장자의 폴더가 없으면 생성
+                    if (!uploadDirWithExtension.exists()) {
+                        uploadDirWithExtension.mkdir();
+                    }
+
                     attchDTO.setBbsId(boardDTO.getBbsId());
                     attchDTO.setAttachFileNm(originalFilename);
-                    attchDTO.setFilePath(uploadPath);
+                    attchDTO.setFilePath(uploadPathWithExtension);
                     attchDTO.setSaveFileNm(uploadFilename);
                     fileList.add(attchDTO);
                 }
@@ -221,23 +230,40 @@ public class BoardService {
                 // 첨부파일 정보 DB에 저장
                 for (AttchDTO file : fileList) {
                     file.setBbsSeq(boardDTO.getBbsSeq());
+                    file.setBbsId(boardDTO.getBbsId());
                     boardMapper.insertBoardFileList(file);
                 }
 
-                // 파일 업로드 처리
+                // 파일업로드
                 try {
-                    for(int i = 0; i < multiFileList.size(); i++) {
-                        File uploadFile = new File(uploadPath +"/"+ fileList.get(i).getSaveFileNm());
+                    for (int i = 0; i < multiFileList.size(); i++) {
+                        attchDTO = fileList.get(i);
+                        String originalFilename = attchDTO.getAttachFileNm();
+                        String uploadFilename = attchDTO.getSaveFileNm();
+                        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.') + 1);
+
+                        // 확장자별로 폴더 생성
+                        String extensionFolder = uploadPath + File.separator + fileExtension;
+                        File extensionDir = new File(extensionFolder);
+                        if (!extensionDir.exists()) {
+                            extensionDir.mkdirs();
+                        }
+
+                        // 전체 파일 경로
+                        String fullFilePath = extensionFolder + File.separator + uploadFilename;
+
+                        File uploadFile = new File(fullFilePath);
                         multiFileList.get(i).transferTo(uploadFile);
                     }
                     System.out.println("다중 파일 업로드 성공");
-
                 } catch (IllegalStateException | IOException e) {
-                    // 파일 업로드 실패 시, 업로드된 파일 삭제 및 예외 발생
                     System.out.println("다중 파일 업로드 실패");
 
-                    for(int i = 0; i < multiFileList.size(); i++) {
-                        new File(uploadPath +"/"+ fileList.get(i).getSaveFileNm()).delete();
+                    // 만약 업로드 실패하면 파일 삭제
+                    for (int i = 0; i < multiFileList.size(); i++) {
+                        attchDTO = fileList.get(i);
+                        String fullFilePath = uploadPath + File.separator + attchDTO.getSaveFileNm();
+                        new File(fullFilePath).delete();
                     }
 
                     throw new CustomException(e.getMessage());
@@ -349,18 +375,18 @@ public class BoardService {
         }
     }
 
-//    /**
-//     * 게시판 삭제
-//     *
-//     */
-//    public void boardDelete(BoardDTO boardDTO) throws CustomException {
-//        log.debug("################ BoardService.boardDelete ################");
-//        AttchDTO attchDTO = new AttchDTO();
-//        attchDTO.setBbsSeq(boardDTO.getBbsSeq());
-//        boardMapper.fileDelete(attchDTO);
-//        boardMapper.boardDelete(boardDTO);
-//
-//    }
+    /**
+     * 게시판 삭제
+     *
+     */
+    public void boardDelete(BoardDTO boardDTO) throws CustomException {
+        log.debug("################ BoardService.boardDelete ################");
+        AttchDTO attchDTO = new AttchDTO();
+        attchDTO.setBbsSeq(boardDTO.getBbsSeq());
+        boardMapper.fileDelete(attchDTO);
+        boardMapper.boardDelete(boardDTO);
+
+    }
 
     /**
      * 공지사항 조회수
