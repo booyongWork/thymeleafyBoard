@@ -44,7 +44,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 
 //NOTE. ResponseEntity 스프링 프레임워크 내 웹 응용 프로그램에서 HTTP 응답을 생성하는데 사용되는 클래스
-// ResponseEntity는 HTTP 응답 본문, 헤더, 상태 코드 및 다른 응답 요소를 캡슐화하고 제어할 수 있는 강력한 도구입니다.
+// ResponseEntity는 HTTP 응답 본문, 헤더, 상태 코드 및 다른 응답 요소를 캡슐화하고 제어할 수 있는 강력한 도구
 import org.springframework.http.ResponseEntity;
 
 //NOTE. Controller 어노테이션은 스프링 프레임워크에서 컨트롤러 역할을 하는 클래스에 지정
@@ -52,18 +52,18 @@ import org.springframework.http.ResponseEntity;
 // @Controller 어노테이션은 스프링 MVC의 핵심 요소 중 하나로, 클라이언트의 요청을 처리하는 비즈니스 로직과 뷰를 결합하여 전체적인 웹 애플리케이션의 동작을 제어
 import org.springframework.stereotype.Controller;
 
-//NOTE. Model은 스프링이 지원하는 기능으로써, key와 value로 이루어져있는 HashMap이다.
+//NOTE. Model은 스프링이 지원하는 기능으로써, key와 value로 이루어져있는 HashMap
 // Model의 .addAttribute()를 통해 view에 전달할 데이터를 저장할 수 있다.
 import org.springframework.ui.Model;
 
-//NOTE. @GetMapping 은 스프링 프레임워크에서 사용하는 어노테이션이다.
-// 이 어노테이션은 HTTP GET 요청을 특정 메서드와 매핑하기 위해서 사용된다.
-// HTTP GET 요청은 일반적으로 서버에서 정보를 조회하는 데 사용된다.
+//NOTE. @GetMapping 은 스프링 프레임워크에서 사용하는 어노테이션
+// 이 어노테이션은 HTTP GET 요청을 특정 메서드와 매핑하기 위해서 사용
+// HTTP GET 요청은 일반적으로 서버에서 정보를 조회하는 데 사용
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 //NOTE. REST API에서 URI에 변수가 들어가는걸 실무에서 많이 볼 수 있다.
-// 예를 들면, 아래 URI에서 밑줄 친 부분이 @PathVariable로 처리해줄 수 있는 부분이다.
+// 예를 들면, 아래 URI에서 밑줄 친 부분이 @PathVariable로 처리해줄 수 있는 부분
 // http://localhost:8080/api/user/1234
 import org.springframework.web.bind.annotation.PathVariable;
 
