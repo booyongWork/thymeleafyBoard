@@ -15,9 +15,6 @@ public class AttchVO {
     /*게시글 순번*/
     private int bbsSeq;
 
-    /*게시글 ID*/
-    private String bbsId;
-
     /*첨부파일 순번*/
     private int attachFileSeq;
 

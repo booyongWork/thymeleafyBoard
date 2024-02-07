@@ -112,16 +112,23 @@
 
         list.forEach(item => {
             let no = (recordTotal+1) - item.rowNum;
-            let imgYn = item.imgYn != null ? `<img class="imgYn" src="/img/free-icon-attachments-304690.png" data-bbsSeq="${item.bbsSeq}">` : '';
+            let imgYn = item.imgYn != null ?
+                `<img class="imgYn" src="/img/free-icon-attachments-304690.png" data-bbsSeq="${item.bbsSeq}" style="cursor: pointer;">` : '-';
             contents +=
-                `<tr onclick="javascript:goDetail('\${item.noticeId}');">
+                `<tr>
                   <td>${no}</td>
                   <td><a href="/board/view?bbsSeq=${item.bbsSeq}&modifyYn=Y">${item.title}</a></td>
                    <td>admin</td>
                    <td>${item.wrtrDd}</td>
                    <td>${item.inqCnt}</td>
-                   <td style="cursor : pointer;">${imgYn ? imgYn : "-"}</td>
+                   <td>${imgYn}</td>
               	 </tr>`;
+        });
+
+        $(document).on("click", ".imgYn", function () {
+            let bbsSeq = $(this).attr("data-bbsSeq");
+            // console.log(`bbsSeq: ${bbsSeq}`);
+            window.location.href = '/board/downloadFile?bbsSeq=' + bbsSeq;
         });
 
         return contents;

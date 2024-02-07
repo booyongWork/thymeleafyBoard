@@ -8,9 +8,7 @@
 <main>
 <div class="container">
     <h2>게시판</h2>
-<!--    <form action="#" th:action="@{/noticeBoard/updateForm}" th:object="${boardDetail}" method="post">-->
     <form id="form" name="form" class="center" method="post" enctype="multipart/form-data" th:object="${boardDetail}">
-        <input type="hidden" name="bbsId" th:value="BOARD">
         <input type="hidden" th:field="*{bbsSeq}">
         <input type="hidden" name="modifyYn" th:value="${modifyYn}">
 

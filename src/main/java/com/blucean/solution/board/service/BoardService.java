@@ -51,12 +51,6 @@ public class BoardService {
         for(BoardDTO tempDto : boardList) {
             resultVO = new BoardVO();
             resultVO.setBbsSeq(tempDto.getBbsSeq());
-//            resultVO.setBbsId(tempDto.getBbsId());
-//            resultVO.setBbsGrpSeq(tempDto.getBbsGrpSeq());
-//            resultVO.setBbsGrpIdx(tempDto.getBbsGrpIdx());
-//            resultVO.setWrtrIp(tempDto.getWrtrId());
-//            resultVO.setWrtrNm(tempDto.getWrtrNm());
-//            resultVO.setUsrDefine1(tempDto.getUsrDefine1());
             resultVO.setTitle(tempDto.getTitle());
             resultVO.setWrtrDd(tempDto.getWrtrDd());
             resultVO.setLstUpdDdtm(tempDto.getLstUpdDdtm());
@@ -88,19 +82,11 @@ public class BoardService {
         // 조회된 정보를 담을 ReqBoardVO 객체를 생성
         BoardVO resultVO = new BoardVO();
         resultVO.setBbsSeq(boardDetail.getBbsSeq());
-//        resultVO.setBbsId(boardDetail.getBbsId());
-//        resultVO.setBbsGrpSeq(boardDetail.getBbsGrpSeq());
-//        resultVO.setBbsGrpIdx(boardDetail.getBbsGrpIdx());
-//        resultVO.setBbsDepth(boardDetail.getBbsDepth());
         resultVO.setTitle(boardDetail.getTitle());
         resultVO.setContn(boardDetail.getContn());
         resultVO.setWrtrId(boardDetail.getWrtrId());
-//        resultVO.setWrtrNm(boardDetail.getWrtrNm());
-//        resultVO.setWrtrIp(boardDetail.getWrtrIp());
         resultVO.setWrtrDd(boardDetail.getWrtrDd());
         resultVO.setWrtrTm(boardDetail.getWrtrTm());
-//        resultVO.setUsrDefine1(boardDetail.getUsrDefine1());
-//        resultVO.setUsrDefine2(boardDetail.getUsrDefine2());
         resultVO.setLstUpdUsrId(boardDetail.getLstUpdUsrId());
         resultVO.setLstUpdUsrNm(boardDetail.getLstUpdUsrNm());
         resultVO.setLstUpdDdtm(boardDetail.getLstUpdDdtm());
@@ -160,7 +146,6 @@ public class BoardService {
     @Transactional(rollbackFor = CustomException.class, propagation = Propagation.REQUIRED)
     public void boardWrite(BoardDTO boardDTO, List<MultipartFile> multiFileList) throws CustomException {
         log.debug("################ BoardService.boardWrite ################");
-//        boardDTO.setContn(CommonUtil.getRplcAll(boardDTO.getContn()));
         // 첨부파일 정보 객체 생성
         AttchDTO attchDTO = new AttchDTO();
         if ("Y".equals(boardDTO.getModifyYn())) {
@@ -395,11 +380,6 @@ public class BoardService {
         } catch (Exception e) {
             log.error("text : {}", e.getMessage());
         }
-    }
-
-    public List<BoardDTO> getNoticeList(Map map) {
-        log.debug("################ BoardService.getNoticeList ################");
-        return boardMapper.selectNoticeList(map);
     }
 
     /**

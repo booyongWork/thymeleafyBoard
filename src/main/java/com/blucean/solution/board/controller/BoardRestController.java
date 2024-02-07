@@ -1,19 +1,16 @@
 package com.blucean.solution.board.controller;
 
+import com.blucean.solution.board.dto.BoardDTO;
 import com.blucean.solution.board.dto.BoardVO;
 import com.blucean.solution.board.dto.ResponseVO;
-import com.blucean.solution.common.CommonConst;
-import com.blucean.solution.board.dto.BoardDTO;
 import com.blucean.solution.board.service.BoardService;
+import com.blucean.solution.common.CommonConst;
 import com.blucean.solution.common.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Slf4j
