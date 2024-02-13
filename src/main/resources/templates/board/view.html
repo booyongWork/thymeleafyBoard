@@ -51,7 +51,7 @@
                             <img th:src="'/board/media/' + ${file.type} + '/' + ${file.saveFileNm}" alt="이미지" style="height: 200px; width: 200px; margin: 10px;">
                         </th:block>
                         <th:block th:if="${file.type} == 'video'">
-                            <video autoplay controls onloadedmetadata="setTimeout(function(){document.getElementById('videoPlayer').pause()}, 10000)" style="height: 350px; width: 350px; margin: 10px;">
+                            <video autoplay controls onloadedmetadata="setTimeout(function(){document.getElementById('videoPlayer').pause()}, 10000)" style="height: 500px; width: 500px; margin: 10px;">
                                 <source th:src="'/board/media/' + ${file.type} + '/' + ${file.saveFileNm}" type="video/mp4">
                             </video>
                         </th:block>
