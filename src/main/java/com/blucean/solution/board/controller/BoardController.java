@@ -145,6 +145,9 @@ public class BoardController {
         // 게시물 상세 정보와 수정 여부를 모델에 추가
         model.addAttribute("boardDetail", boardVODtl);
         model.addAttribute("modifyYn", boardDTO.getModifyYn());
+
+        //NOTE. model.addAttribute()는 Spring MVC 프레임워크에서 사용되는 메서드로, 뷰에 데이터를 전달하는 데 사용된다. 일반적으로 컨트롤러에서 뷰로 데이터를 전달할 때 사용된다.
+
         return "board/view";
     }
 
@@ -208,20 +211,45 @@ public class BoardController {
         if (type.equalsIgnoreCase("image")) {
             // 이미지 리소스를 로드
             Resource imageResource = boardService.loadImage(filename);
-            // 이미지 리소스를 HTTP 응답으로 반환
-            return ResponseEntity.ok()
+
+            // 이미지 리소스를 ResponseEntity를 사용하여 HTTP 응답을 생성하고 반환
+            ResponseEntity responseEntity = ResponseEntity.ok()
+                    // 응답의 콘텐츠 타입을 설정
                     .contentType(MediaTypeFactory.getMediaType(imageResource).orElse(MediaType.APPLICATION_OCTET_STREAM))
+                    // 이미지 리소스를 응답의 본문(body)으로 설정
                     .body(imageResource);
+
+            // 이미지 리소스를 로그로 출력
+            log.info("*#*#Loaded image resource: {}", imageResource);
+            // HTTP 응답 엔터티를 로그로 출력
+            log.info("*#*#HTTP response entity: {}", responseEntity);
+
+            return responseEntity;
+
         } else if (type.equalsIgnoreCase("video")) {
             // 비디오 리소스를 로드
             Resource videoResource = boardService.loadVideo(filename);
             // 비디오 리소스를 HTTP 응답으로 반환
-            return ResponseEntity.ok()
+            ResponseEntity responseEntity = ResponseEntity.ok()
+                    // 응답의 콘텐츠 타입을 설정
                     .contentType(MediaTypeFactory.getMediaType(videoResource).orElse(MediaType.APPLICATION_OCTET_STREAM))
+                    // 이미지 리소스를 응답의 본문(body)으로 설정
                     .body(videoResource);
+
+            // 비디오 리소스를 로그로 출력
+            log.info("*#*#Loaded videoResource: {}", videoResource);
+            // HTTP 응답 엔터티를 로그로 출력
+            log.info("*#*#HTTP response entity: {}", responseEntity);
+
+            return responseEntity;
         } else {
             // 지원되지 않는 미디어 타입인 경우 IllegalArgumentException
             throw new IllegalArgumentException("Unsupported media type: " + type);
         }
+
+        //NOTE. MediaTypeFactory : 파일의 content-type의 유형을 가져오거나, 기본값으로 8 bit 스트림 유형인 APPLICATION_OCTET_STREAM 을 리턴. 여기서 body에 ResouceRegion 객체를 담아 보낸다.
+        //NOTE. APPLICATION_OCTET_STREAM HTTP 응답에서 "application/octet-stream" 콘텐츠 타입은 일반적으로 클라이언트에게 이진 데이터를 전송할 때 사용
+        // 이진 데이터는 이미지, 동영상, 음악 파일 등과 같은 다양한 형식의 파일일 수 있다. 이 MIME 타입은 특정한 애플리케이션에서만 해석 가능한 데이터를 전송할 때 사용되며,
+        // 데이터 형식에 대한 명확한 타입 정보가 없을 때 사용된다.
     }
 }

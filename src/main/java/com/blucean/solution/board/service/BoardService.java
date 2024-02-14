@@ -188,10 +188,11 @@ public class BoardService {
 
         // 첨부파일이 존재하면 VO 객체에 추가 정보 설정
         if (!CollectionUtils.isEmpty(result)) {
+            // 업로드 된 파일 정보
             resultVO.setUploadBoardFile(result);
             // 첨부 파일의 저장 파일명이 비어있지 않고 파일 유형이 null이 아닌 경우
             if (!result.get(0).getSaveFileNm().isEmpty() && result.get(0).getType() != null) {
-                resultVO.setFileUrl(result.get(0).getSaveFileNm());
+//                resultVO.setFileUrl(result.get(0).getSaveFileNm());
                 resultVO.setType(result.get(0).getType());
             }
         }
@@ -473,6 +474,8 @@ public class BoardService {
 
         // 리소스 로드
         Resource resource = new UrlResource(filePath.toUri());
+        //NOTE. Resource "리소스"는 프로그래밍에서 다양한 종류의 데이터나 정보를 가리키는 말이다.
+        // 일반적으로는 소프트웨어나 애플리케이션에서 사용되는 파일, 데이터베이스의 레코드, 네트워크 상의 자원 등을 가리킨다.
 
         // 이미지 파일이 존재하고 읽을 수 있는지 확인
         if (!resource.exists() || !resource.isReadable()) {
