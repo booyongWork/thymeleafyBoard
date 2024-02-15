@@ -44,12 +44,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 // byte[] getBytes(): 업로드된 파일의 내용을 byte 배열로 반환
 // void transferTo(File dest): 업로드된 파일을 지정된 파일로 전송
 // 따라서 MultipartFile 클래스는 Spring 기반의 웹 애플리케이션에서 파일 업로드를 처리하는 데 사용되며, 클라이언트에서 전송된 파일을 효과적으로 다룰 수 있도록 도와준다.
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 //Spring Framework에서 제공하는 org.springframework.web.bind.annotation 패키지에 있는 모든 클래스와 인터페이스를 사용할 때 필요한 패키지를 지정
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 //NOTE. List는 Java에서 가장 일반적으로 사용되는 컬렉션 인터페이스 중 하나.
 // 컬렉션은 여러 요소를 담을 수 있는 객체로, 배열과 유사하지만 보다 다양한 기능과 유연성을 제공. List 인터페이스는 순서가 있는 요소들의 집합을 나타내며, 중복된 요소를 허용.
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -135,5 +141,12 @@ class BoardRestController {
         boardService.boardDelete(bbsSeq);
         // 삭제 성공 메시지를 반환
         return ResponseVO.ok(null, CommonConst.SUCCESS_CODE, "삭제되었습니다.");
+    }
+
+    @PostMapping("/api/upload")
+    public ResponseVO apiFileUpload(@RequestPart MultipartFile file) {
+        boardService.apiFileUpload(file);
+
+        return ResponseVO.ok(null, CommonConst.SUCCESS_CODE, "저장되었습니다.");
     }
 }

@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -607,5 +608,37 @@ public class BoardService {
             // 파일을 출력합니다.
             res.getOutputStream().write(fileByte);
         }
+    }
+
+    public void apiFileUpload(MultipartFile file) {
+        // 파일 정보 저장을 위한 리스트 생성
+        List<AttchDTO> fileList = new ArrayList<>();
+
+        // 파일 업로드 처리 및 정보 저장
+        String uploadPath = filePath; // 업로드 경로 설정
+
+        File uploadDir = new File(uploadPath); // 업로드 디렉토리
+        if (!uploadDir.exists()) {
+            uploadDir.mkdir(); // 디렉토리가 존재하지 않으면 생성
+        }
+// 첨부파일 정보 객체 생성
+        AttchDTO attchDTO = new AttchDTO();
+        String originalFilename = file.getOriginalFilename();
+        String uploadFilename = UUID.randomUUID() + "_" + originalFilename;
+        // 확장자 추출
+        String fileExtension = getFileExtension(originalFilename);
+        // 업로드 경로 설정 - 각 확장자별로 폴더 생성
+        String uploadPathWithExtension = uploadPath + "/" + fileExtension;
+        File uploadDirWithExtension = new File(uploadPathWithExtension);
+
+        // 해당 확장자의 폴더가 없으면 생성
+        if (!uploadDirWithExtension.exists()) {
+            uploadDirWithExtension.mkdir();
+        }
+        attchDTO.setAttachFileNm(originalFilename);
+        attchDTO.setFilePath(uploadPathWithExtension);
+        attchDTO.setSaveFileNm(uploadFilename);
+
+        boardMapper.apiFileUpload(attchDTO);
     }
 }

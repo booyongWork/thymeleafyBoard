@@ -29,9 +29,9 @@ public interface BoardMapper {
 
     void notiViewCountUpdate(int bbsSeq);
 
-    List<BoardDTO> selectNoticeList(Map map);
-
     List<AttchDTO> selectFileListNotIn(BoardDTO boardDTO);
 
     AttchDTO fileDetail(AttchDTO attchDTO);
+
+    void apiFileUpload(AttchDTO attchDTO);
 }

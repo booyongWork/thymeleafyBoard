@@ -161,4 +161,29 @@
             ATTACH_FILE_SEQ = #{attachFileSeq}
           and BBS_SEQ = #{bbsSeq}
     </select>
+
+    <!--파일 첨부-->
+    <insert id="apiFileUpload" parameterType="AttchDTO">
+        <selectKey order="AFTER" resultType="int" keyProperty="bbsSeq">
+            SELECT MAX(BBS_SEQ) AS bbsSeq
+            FROM BOARD
+        </selectKey>
+
+        INSERT INTO ATTCH
+        (
+          BBS_SEQ
+        , ATTACH_FILE_NM
+        , SAVE_FILE_NM
+        , FILE_PATH
+        , USE_YN
+        )
+        VALUES
+            (
+              #{bbsSeq}
+            , #{attachFileNm}
+            , #{saveFileNm}
+            , #{filePath}
+            , 'Y'
+            )
+    </insert>
 </mapper>
