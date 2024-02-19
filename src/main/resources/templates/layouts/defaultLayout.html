@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>게시판</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- css 파일 추가 -->
+    <link rel="icon" type="image/x-icon" href="/img/favicon.png" th:href="@{/img/favicon.png}" />
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}"/>
+    <!-- slick-slider(CSS)-->
+    <link rel="stylesheet" href="/slick/slick.css" th:href="@{/slick/slick.css}"/>
+    <link rel="stylesheet" href="/slick/slick-theme.css" th:href="@{/slick/slick-theme.css}"/>
+    <!-- AOS 라이브러리 CSS-->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <!--  jquery  -->
+    <script type="text/javascript" src="/ui-pro/dist/js/jquery/jquery.min.js" th:src="@{/js/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" src="/ui-pro/dist/js/jquery/jquery-3.6.0.min.js" th:src="@{/js/jquery/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" src="/ui-pro/dist/js/jquery/jquery-ui.min.js" th:src="@{/js/jquery/jquery-ui.min.js}"></script>
+    <!-- js 파일 추가 -->
+    <script type="text/javascript" th:src="@{/js/feather.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/all.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <!-- slick-slider 반응형 웹을 지원하는 jQuery 슬라이더 라이브러리 -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <!-- AOS 라이브러리 js-->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+</head>
+<body>
+<!--    <th:block th:replace="fragments/commonHead :: header"></th:block>-->
+    <th:block layout:fragment="content"></th:block>
+<!--    <th:block th:replace="fragments/commonFooter :: footer"></th:block>-->
+</body>
+<script type="text/javascript">
+</script>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/defaultLayout}" layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FILE API 페이지</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%; /* 표의 너비 설정 */
+            margin: 20px auto; /* 가운데 정렬 */
+        }
+        th {
+            border: 1px solid #dddddd; /* 테두리 선 스타일 지정 */
+            padding: 8px;
+            text-align: center;
+        }
+        td {
+            border: 1px solid #dddddd; /* 테두리 선 스타일 지정 */
+            padding: 8px;
+            text-align: left; /* 왼쪽 정렬로 변경 */
+        }
+        .submit-button {
+            display: block;
+            margin: 0 auto;
+            font-size: 16px; /* 버튼의 폰트 크기 설정 */
+            padding: 10px 20px; /* 버튼의 내부 여백 설정 */
+            border: none; /* 버튼의 테두리 제거 */
+            background-color: #007bff; /* 버튼의 배경색 설정 */
+            color: white; /* 버튼의 텍스트 색상 설정 */
+            border-radius: 5px; /* 버튼의 모서리를 둥글게 설정 */
+            cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 설정 */
+            /*float: start; !* 오른쪽으로 배치 *!*/
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align: center;">FILE API 페이지 입니다</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>첨부파일명</th>
+        <th>물리 저장 파일 명</th>
+        <th>파일경로</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="data : ${dataList}">
+        <td th:text="${data.attachFileNm}"></td>
+        <td th:text="${data.saveFileNm}"></td>
+        <td th:text="${data.filePath}"></td>
+        <!-- 다른 필드들의 값 추가 -->
+    </tr>
+    </tbody>
+</table>
+<button id="submitBtn" class="submit-button">전송</button>
+</body>
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function() {
+        // FormData 객체 생성
+        var formData = new FormData();
+
+        // ${dataList}에 있는 각 데이터를 FormData에 추가
+        document.querySelectorAll('tbody tr').forEach(function(row) {
+            var attachFileNm = row.querySelector('td:nth-child(1)').innerText;
+            var saveFileNm = row.querySelector('td:nth-child(2)').innerText;
+            var filePath = row.querySelector('td:nth-child(3)').innerText;
+
+            formData.append('attachFileNm[]', attachFileNm);
+            formData.append('saveFileNm[]', saveFileNm);
+            formData.append('filePath[]', filePath);
+            // 이하 필요한 필드 추가
+        });
+
+        // 파일 입력 필드에서 선택한 파일을 FormData에 추가
+        var fileInput = document.getElementById('fileInput').files[0];
+        formData.append('file', fileInput);
+
+        // 파일 업로드 API 호출
+        fetch('/fileApi/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('파일 업로드 성공:', data);
+                // 파일 업로드 성공 시 추가 작업을 수행할 수 있습니다.
+            })
+            .catch(error => {
+                console.error('파일 업로드 에러:', error);
+                // 파일 업로드 실패 시 처리할 수 있는 내용을 여기에 추가합니다.
+            });
+    });
+</script>
+</html>

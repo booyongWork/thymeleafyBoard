@@ -186,4 +186,8 @@
             , 'Y'
             )
     </insert>
+
+    <select id="selectAllData" resultType="AttchDTO">
+        SELECT * FROM ATTCH
+    </select>
 </mapper>

@@ -34,4 +34,6 @@ public interface BoardMapper {
     AttchDTO fileDetail(AttchDTO attchDTO);
 
     void apiFileUpload(AttchDTO attchDTO);
+
+    List<AttchDTO> selectAllData();
 }
