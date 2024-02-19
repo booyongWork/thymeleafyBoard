@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blucean.solution.board.mapper.FileApiMapper">
+    <select id="selectAllData" resultType="AttchDTO">
+        SELECT * FROM ATTCH
+    </select>
+
+    <!--파일 첨부-->
+    <insert id="insertBoardFileList" parameterType="AttchDTO">
+        INSERT INTO otherAttch
+        (
+            BBS_SEQ
+        , ATTACH_FILE_NM
+        , SAVE_FILE_NM
+        , FILE_PATH
+        , USE_YN
+        )
+        VALUES
+            (
+                #{bbsSeq}
+            , #{attachFileNm}
+            , #{saveFileNm}
+            , #{filePath}
+            , 'Y'
+            )
+    </insert>
+</mapper>

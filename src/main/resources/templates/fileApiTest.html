@@ -63,22 +63,6 @@
         // FormData 객체 생성
         var formData = new FormData();
 
-        // ${dataList}에 있는 각 데이터를 FormData에 추가
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            var attachFileNm = row.querySelector('td:nth-child(1)').innerText;
-            var saveFileNm = row.querySelector('td:nth-child(2)').innerText;
-            var filePath = row.querySelector('td:nth-child(3)').innerText;
-
-            formData.append('attachFileNm[]', attachFileNm);
-            formData.append('saveFileNm[]', saveFileNm);
-            formData.append('filePath[]', filePath);
-            // 이하 필요한 필드 추가
-        });
-
-        // 파일 입력 필드에서 선택한 파일을 FormData에 추가
-        var fileInput = document.getElementById('fileInput').files[0];
-        formData.append('file', fileInput);
-
         // 파일 업로드 API 호출
         fetch('/fileApi/upload', {
             method: 'POST',

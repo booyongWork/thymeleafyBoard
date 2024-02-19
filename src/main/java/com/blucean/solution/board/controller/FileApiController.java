@@ -2,6 +2,7 @@ package com.blucean.solution.board.controller;
 
 import com.blucean.solution.board.dto.AttchDTO;
 import com.blucean.solution.board.mapper.BoardMapper;
+import com.blucean.solution.board.mapper.FileApiMapper;
 import com.blucean.solution.board.service.BoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,11 @@ import java.util.List;
 @RequestMapping("/fileApi")
 public class FileApiController {
     @Autowired
-    private BoardMapper boardMapper;
+    private FileApiMapper fileApiMapper;
 
     @GetMapping("/page")
     public String list(Model model) {
-        List<AttchDTO> dataList = boardMapper.selectAllData();
+        List<AttchDTO> dataList = fileApiMapper.selectAllData();
         model.addAttribute("dataList", dataList);
         return "fileApiTest";}
 }
