@@ -5,23 +5,53 @@
         SELECT * FROM ATTCH
     </select>
 
+    <select id="otherSelectAllData" resultType="AttchDTO">
+        SELECT * FROM otherATTCH
+    </select>
+
     <!--파일 첨부-->
-    <insert id="insertBoardFileList" parameterType="AttchDTO">
+    <insert id="insertOtherAttach" parameterType="AttchDTO">
         INSERT INTO otherAttch
         (
-            BBS_SEQ
+          BBS_SEQ
+        , ATTACH_FILE_SEQ
         , ATTACH_FILE_NM
         , SAVE_FILE_NM
         , FILE_PATH
         , USE_YN
+        , TYPE
         )
         VALUES
             (
-                #{bbsSeq}
+              #{bbsSeq}
+            , #{attachFileSeq}
             , #{attachFileNm}
             , #{saveFileNm}
             , #{filePath}
             , 'Y'
+            , 'I'
             )
     </insert>
+
+    <select id="countAttachFileNm" resultType="int">
+        SELECT COUNT(*) FROM otherAttch
+        WHERE ATTACH_FILE_NM = #{attachFileNm}
+    </select>
+
+    <select id="countOtherAttachFileNm" resultType="int">
+        SELECT COUNT(*) FROM ATTCH
+        WHERE ATTACH_FILE_NM = #{attachFileNm}
+    </select>
+
+    <update id="updateOtherAttach" parameterType="AttchDTO">
+        UPDATE otherAttch
+        SET save_file_nm = #{saveFileNm}
+          , file_path = #{filePath}
+          , TYPE = 'U'
+        WHERE attach_file_seq = #{attachFileSeq}
+    </update>
+
+    <delete id="apiFileDelete" parameterType="String">
+        DELETE FROM otherAttch WHERE attach_file_nm = #{attachFileNm}
+    </delete>
 </mapper>

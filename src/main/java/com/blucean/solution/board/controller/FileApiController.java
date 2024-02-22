@@ -23,6 +23,8 @@ public class FileApiController {
     @GetMapping("/page")
     public String list(Model model) {
         List<AttchDTO> dataList = fileApiMapper.selectAllData();
+        List<AttchDTO> otherdataList = fileApiMapper.otherSelectAllData();
         model.addAttribute("dataList", dataList);
+        model.addAttribute("otherdataList", otherdataList);
         return "fileApiTest";}
 }

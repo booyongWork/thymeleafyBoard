@@ -35,28 +35,56 @@
             cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 설정 */
             /*float: start; !* 오른쪽으로 배치 *!*/
         }
+        .green-text {
+            color: #00b0b5;
+        }
     </style>
 </head>
 <body>
-<h1 style="text-align: center;">FILE API 페이지 입니다</h1>
+<h1 style="text-align: center;">ATTACH 테이블</h1>
 <table border="1">
     <thead>
     <tr>
+        <th>no</th>
         <th>첨부파일명</th>
         <th>물리 저장 파일 명</th>
         <th>파일경로</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="data : ${dataList}">
-        <td th:text="${data.attachFileNm}"></td>
-        <td th:text="${data.saveFileNm}"></td>
-        <td th:text="${data.filePath}"></td>
-        <!-- 다른 필드들의 값 추가 -->
+    <tr th:each="data, stat : ${dataList}">
+        <td th:text="${stat.index + 1}"/>
+        <td th:text="${data.attachFileNm}"/>
+        <td th:text="${data.saveFileNm}"/>
+        <td th:text="${data.filePath}"/>
     </tr>
     </tbody>
 </table>
-<button id="submitBtn" class="submit-button">전송</button>
+<div style="text-align: center;">
+    <button id="submitBtn" class="submit-button" style="display: inline-block; margin-right: 10px;">전송</button>
+</div>
+
+<h1 style="text-align: center;">OTHER ATTACH 테이블</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>no</th>
+        <th>첨부파일명</th>
+        <th>물리 저장 파일 명</th>
+        <th>파일경로</th>
+        <th>타입</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="data, stat : ${otherdataList}">
+        <td th:text="${stat.index + 1}"/>
+        <td th:text="${data.attachFileNm}"/>
+        <td th:text="${data.saveFileNm}"/>
+        <td th:text="${data.filePath}"/>
+        <td th:text="${data.type}" th:class="${data.type == 'U' ? 'green-text' : ''}"/>
+    </tr>
+    </tbody>
+</table>
 </body>
 <script>
     document.getElementById('submitBtn').addEventListener('click', function() {
@@ -71,6 +99,7 @@
             .then(response => response.json())
             .then(data => {
                 console.log('파일 업로드 성공:', data);
+                alert('중복된 파일은 제외 후 파일 업로드 성공');
                 // 파일 업로드 성공 시 추가 작업을 수행할 수 있습니다.
             })
             .catch(error => {
