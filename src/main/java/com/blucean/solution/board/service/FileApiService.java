@@ -128,6 +128,19 @@ public class FileApiService {
         }
     }
 
+    public void deleteFile(String filePath) {
+        File file = new File(filePath);
+        if (file.exists()) {
+            if (file.delete()) {
+                log.info("파일 삭제 완료: {}", filePath);
+            } else {
+                log.error("파일 삭제 실패: {}", filePath);
+            }
+        } else {
+            log.warn("삭제할 파일이 존재하지 않습니다: {}", filePath);
+        }
+    }
+
     public void apiFileDelete() {
         // 파일 삭제 로직 작성
         List<AttchDTO> otherdataList = fileApiMapper.otherSelectAllData();
@@ -136,6 +149,7 @@ public class FileApiService {
             // 파일명을 기준으로 해당 파일 정보를 삭제
             int count2 = fileApiMapper.countOtherAttachFileNm(otherDTO.getAttachFileNm());
             if (count2 == 0) {
+                deleteFile(otherDTO.getFilePath());
                 fileApiMapper.apiFileDelete(otherDTO.getAttachFileNm());
             }
             log.info("파일 정보 삭제 완료: {}", otherDTO.getAttachFileNm());
